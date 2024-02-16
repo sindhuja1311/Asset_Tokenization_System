@@ -166,13 +166,19 @@ router.get('/user-assets/:email', async (req, res) => {
         approved: true
       }
     );
+
+    const ownerIndex = allAssets.findIndex(asset => asset.owner_details.some(owner => owner.email === email));
+
     console.log('Fetched all assets:', allAssets);
-    res.status(200).json(allAssets);
+    console.log('Owner index:', ownerIndex);
+
+    res.status(200).json({ allAssets, ownerIndex });
   } catch (error) {
     console.error('Error fetching all assets:', error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
+
 router.post('/sell/:email/:unique_id', async (req, res) => {
   const { email, unique_id } = req.params;
   const { percentage } = req.body;
@@ -268,23 +274,42 @@ router.get('/upforsale/:email', async (req, res) => {
   try {
     const { email } = req.params;
 
-    const allAssets = await propertyModel.find({
-      approved: true,
-      $or: [
-        { "owner_details.status": "partial sale" },
-        { "owner_details.status": "full sale" }
-      ],
-      "owner_details.email": { $ne: email }, // Exclude assets where the main owner's email matches
-      "owner_details.request_details.email": { $ne: email } // Exclude assets where request_details.email matches
-    });
+    const allAssets = await propertyModel.aggregate([
+      {
+        $match: {
+          approved: true,
+          $or: [
+            { "owner_details.status": "partial sale" },
+            { "owner_details.status": "full sale" }
+          ],
+          "owner_details.email": { $ne: email }, // Exclude assets where the main owner's email matches
+          "owner_details.request_details.email": { $ne: email } // Exclude assets where request_details.email matches
+        }
+      },
+      {
+        $addFields: {
+          owner_index: {
+            $indexOfArray: ["$owner_details.email", email]
+          }
+        }
+      }
+    ]);
 
     console.log('Fetched all assets:', allAssets);
-    res.status(200).json(allAssets);
+    
+    // Modify the response JSON object to include the owner_index field
+    const response = allAssets.map(asset => ({
+      ...asset,
+      owner_index: asset.owner_index
+    }));
+
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching all assets:', error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
+
 
 
 router.get('/inprogress/:email', async (req, res) => {
@@ -354,6 +379,119 @@ router.post('/request-data-update/:accountId', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+
+router.get('/requests/:assetId/:email', async (req, res) => {
+  const assetId = req.params.assetId;
+  const email = req.params.email;
+  try {
+    // Find the property by unique ID
+    const property = await propertyModel.findOne({ unique_id: assetId });
+    if (!property) {
+      return res.status(404).json({ message: 'Asset not found' });
+    }
+
+    // Find the owner whose email matches the provided email
+    const owner = property.owner_details.find(owner => owner.email === email);
+    if (!owner) {
+      return res.status(404).json({ message: 'Owner not found for the provided email' });
+    }
+
+    // Filter the request details to include only those with response_status "pending"
+    const pendingRequests = owner.request_details.filter(request => request.response_status === "pending");
+
+    // Send the filtered request details as a response
+    res.status(200).json(pendingRequests);
+  } catch (error) {
+    console.error('Error fetching request details:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+
+
+//confirming or declining access to transaction 
+
+router.put('/requests/:action/:email/:accountId/:uniqueId', async (req, res) => {
+  const { action, email, accountId, uniqueId } = req.params;
+  try {
+      // Find the property by unique ID
+      const property = await propertyModel.findOne({ unique_id: uniqueId });
+      if (!property) {
+          return res.status(404).json({ message: "Property not found" });
+      }
+
+      // Find the owner index associated with the provided account ID
+      const ownerIndex = property.owner_details.findIndex(owner => owner.email === email);
+      if (ownerIndex === -1) {
+          return res.status(404).json({ message: "Owner not found" });
+      }
+
+      // Find the request associated with the provided email
+      const request = property.owner_details[ownerIndex].request_details.find(req => req.account_id === accountId);
+      if (!request) {
+          return res.status(404).json({ message: "Request not found" });
+      }
+
+      // Update the request status based on the action
+      switch (action) {
+          case 'approve':
+              request.response_status = "payment-pending";
+              break;
+          case 'deny':
+              request.response_status = "no-transaction";
+              break;
+          default:
+              return res.status(400).json({ message: "Invalid action" });
+      }
+
+      await property.save();
+
+      res.status(200).json({ message: `Request ${action}ed successfully` });
+  } catch (error) {
+      console.error('Error updating request details:', error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get('/pending/:email', async (req, res) => {
+  const email = req.params.email;
+  try {
+    // Find all assets with status "partial sale" or "full sale"
+    const assets = await propertyModel.find({
+      $or: [
+        { 'owner_details.status': 'partial sale' },
+        { 'owner_details.status': 'full sale' }
+      ]
+    });
+
+    // Filter assets where the current email has a request with response status "payment-pending"
+    const pendingRequests = assets.reduce((pending, asset) => {
+      const matchingRequests = asset.owner_details.reduce((requests, owner) => {
+        const matchingRequest = owner.request_details.find(request => {
+          return request.email === email && request.response_status === 'payment-pending';
+        });
+        if (matchingRequest) {
+          requests.push({
+            asset,
+            owner,
+            request_details: matchingRequest,
+            selling_details: owner.selling_details // Assuming selling_details is available in owner
+          });
+        }
+        return requests;
+      }, []);
+      pending.push(...matchingRequests);
+      return pending;
+    }, []);
+
+    res.status(200).json(pendingRequests);
+  } catch (error) {
+    console.error('Error fetching pending requests:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
 
 // Add more property-related routes as needed
 

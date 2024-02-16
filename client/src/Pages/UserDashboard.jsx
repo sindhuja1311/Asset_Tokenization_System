@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import MyAssets from "../Components/user-functions/MyAssets";
 import BuyInvest from "../Components/user-functions/BuyInvest";
 import Requests from "../Components/user-functions/Requests";
+import Pendings from "../Components/user-functions/Pendings";
 import UserProfile from "../Components/user-functions/userProfile"; // Update 'UserProfile' to 'userProfile'
 import AssetUpload from "../Components/user-functions/AssetUpload";
 import Logout from "../Components/user-functions/Logout";
@@ -35,6 +36,8 @@ function UserDashboard() {
         return <BuyInvest />;
       case "requests":
         return <Requests />;
+      case "pendings":
+        return <Pendings />;
       case "user-profile":
         return <UserProfile email={email} />;
       case "asset-upload":
@@ -68,11 +71,14 @@ function UserDashboard() {
             <div  onClick={() => setActiveComponent("requests")} role="button" tabIndex="0" className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none">
               <div className="grid place-items-center mr-4">
                 <img src= "/request.gif"  fill="currentColor" aria-hidden="true" className="h-10 w-10" />
-              </div>Requests <div className="grid place-items-center ml-auto justify-self-end">
-                <div className="relative grid items-center font-sans font-bold uppercase whitespace-nowrap select-none bg-blue-500/20 text-blue-900 py-1 px-2 text-xs rounded-full opacity-100">
-                  <span className="">14</span>
-                </div>
               </div>
+              Requests
+            </div>
+            <div onClick={() => setActiveComponent("pendings")} role="button" tabIndex="0" className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none">
+              <div className="grid place-items-center mr-4">
+                <img src="/pending.gif"  fill="currentColor" aria-hidden="true" className="h-10 w-10"/> 
+              </div>
+              Pending Payments
             </div>
             <div onClick={() => setActiveComponent("user-profile")} role="button" tabIndex="0" className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none">
               <div className="grid place-items-center mr-4">
@@ -98,6 +104,7 @@ function UserDashboard() {
             <Route path="/my-assets" element={<MyAssets email={email}/>} />
             <Route path="/buy-invest" element={<BuyInvest email={email} />} />
             <Route path="/requests" element={<Requests email={email}/>} />
+            <Route path="/pendings" element={<Pendings email={email}/>} />
             <Route path="/user-profile" element={<UserProfile email={email} />} />
             <Route path="/asset-upload" element={<AssetUpload email={email}/>} />
             <Route path="/logout" element={<Logout email={email}/>} />

@@ -6,6 +6,7 @@ import AssetCard1 from './AssetCard1';
 function MyAssets() {
   const [searchTerm, setSearchTerm] = useState('');
   const [allAssets, setAllAssets] = useState([]);
+  const [ownerIndex, setOwnerIndex] = useState(null); // Add setOwnerIndex declaration
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const email = queryParams.get("email");
@@ -17,8 +18,14 @@ function MyAssets() {
       try {
         const response = await axios.get(`http://localhost:3001/properties/user-assets/${email}`);
         console.log('Response from server:', response.data); // Log the response data
-        setAllAssets(response.data);
-        setFilteredAssets(response.data);
+        
+        const { allAssets, ownerIndex } = response.data;
+  
+        // Set all assets and owner index
+        setAllAssets(allAssets);
+        setFilteredAssets(allAssets);
+        setOwnerIndex(ownerIndex); // Assuming you have a state variable for ownerIndex
+  
       } catch (error) {
         console.error('Error fetching all assets:', error);
       }
@@ -60,11 +67,12 @@ function MyAssets() {
           </button>
         </div>
         <div className="flex justify-center space-x-4 mb-4">
-          <button onClick={() => handleFilter('all')} className={`bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition duration-300 ${filterType === 'all' ? 'font-bold' : ''}`}>All</button>
-          <button onClick={() => handleFilter('completely-owned')} className={`bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition duration-300 ${filterType === 'completely-owned' ? 'font-bold' : ''}`}>Completely Owned</button>
-          <button onClick={() => handleFilter('upforsale')} className={`bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition duration-300 ${filterType === 'upforsale' ? 'font-bold' : ''}`}>Up for Sale</button>
-          <button onClick={() => handleFilter('shared')} className={`bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition duration-300 ${filterType === 'shared' ? 'font-bold' : ''}`}>Shared</button>
-        </div>
+        <button onClick={() => handleFilter('all')} className={`px-4 py-2 text-lg font-normal text-white rounded cursor-pointer ${filterType === 'all' ? 'bg-blue-500' : 'bg-gray-300'}`}>All</button>
+        <button onClick={() => handleFilter('completely-owned')} className={`px-4 py-2 text-lg font-normal text-white rounded cursor-pointer ${filterType === 'completely-owned' ? 'bg-blue-500' : 'bg-gray-300'}`}>Completely Owned</button>
+        <button onClick={() => handleFilter('upforsale')} className={`px-4 py-2 text-lg font-normal text-white rounded cursor-pointer ${filterType === 'upforsale' ? 'bg-blue-500' : 'bg-gray-300'}`}>Up for Sale</button>
+        <button onClick={() => handleFilter('shared')} className={`px-4 py-2 text-lg font-normal text-white rounded cursor-pointer ${filterType === 'shared' ? 'bg-blue-500' : 'bg-gray-300'}`}>Shared</button>
+      </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {filteredAssets.map((asset) => (
     ((filterType === 'all') ||

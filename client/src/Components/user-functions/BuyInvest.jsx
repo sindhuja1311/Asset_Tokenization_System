@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BuyCard from './BuyCard';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
 
 function BuyInvest() {
@@ -10,13 +8,32 @@ function BuyInvest() {
   const [allAssets, setAllAssets] = useState([]);
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState('AVAILABLE');
-  const navigate = useNavigate();
-
+  const [ownerIndex, setOwnerIndex] = useState(null);
+  
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const email = queryParams.get("email");
-  
+  const loginemail = queryParams.get("email");
 
+  useEffect(() => {
+    const fetchAllAssets = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/properties/upforsale/${loginemail}`);
+        console.log('Response from server:', response.data); // Log the response data
+        
+        const { allAssets, ownerIndex } = response.data;
+  
+        setAllAssets(allAssets);
+        setFilteredAssets(allAssets);
+        setOwnerIndex(ownerIndex);
+  
+      } catch (error) {
+        console.error('Error fetching all assets:', error);
+      }
+    };
+  
+    fetchAllAssets();
+  }, [loginemail]);
+  
   const handleSearch = () => {
     const searchTermLowerCase = searchTerm.toLowerCase();
     const filtered = allAssets.filter(
@@ -25,28 +42,15 @@ function BuyInvest() {
     setFilteredAssets(filtered);
   };
 
-  useEffect(() => {
-    const fetchAvailableAssets = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/upforsale/${email}`);
-        setAllAssets(response.data);
-        setFilteredAssets(response.data); // Set filteredAssets to available assets by default
-      } catch (error) {
-        console.error('Error fetching available assets:', error);
-      }
-    };
-  
-    fetchAvailableAssets();
-  }, [email]);
-  
   const handleFilter = async (criteria) => {
     setFilterCriteria(criteria);
     try {
       if (criteria === 'AVAILABLE') {
-        const response = await axios.get(`http://localhost:3001/properties/upforsale/${email}`);
+        
+        const response = await axios.get(`http://localhost:3001/properties/upforsale/${loginemail}`);
         setFilteredAssets(response.data);
       } else if (criteria === 'IN PROGRESS') {
-        const response = await axios.get(`http://localhost:3001/properties/inprogress/${email}`);
+        const response = await axios.get(`http://localhost:3001/properties/inprogress/${loginemail}`);
         setFilteredAssets(response.data);
       }
     } catch (error) {
@@ -54,11 +58,10 @@ function BuyInvest() {
       setFilteredAssets([]); // Reset filteredAssets if an error occurs
     }
   };
-  
 
   return (
     <div>
-      <div className="container mx-auto ">
+      <div className="container mx-auto">
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-3xl font-bold mb-6 text-blue-500">Buy / Invest Assets</h2>
           <div className="flex items-center mb-6">
@@ -92,11 +95,12 @@ function BuyInvest() {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAssets.map((asset) => (
-              <div key={asset.unique_id}>
-                <BuyCard asset={asset} readOnly email={email} />
-              </div>
-            ))}
+          {filteredAssets && filteredAssets.map((asset) => (
+            <div key={asset.unique_id}>
+              <BuyCard asset={asset} readOnly loginemail={loginemail} />
+            </div>
+          ))}
+
           </div>
         </div>
       </div>

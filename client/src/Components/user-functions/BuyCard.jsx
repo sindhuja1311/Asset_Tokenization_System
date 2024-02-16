@@ -5,11 +5,11 @@ import axios from 'axios';
 import AssetButtons from './AssetButtons';
 
 
-const BuyCard = ({ asset, showViewButton, showBuyButton }) => {
+const BuyCard = ({ asset, showViewButton, showBuyButton ,saleOwnerEmail}) => {
   const navigate = useNavigate();
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const email = queryParams.get("email");
+  const loginemail = queryParams.get("loginemail");
   const {
     owner_details,
     location,
@@ -55,6 +55,10 @@ const BuyCard = ({ asset, showViewButton, showBuyButton }) => {
 
   const handleBuy = () => {
     setFormVisible(true);
+  };
+
+  const ownerIndexByEmailAndUniqueId = (email, uniqueId) => {
+    return owner_details.findIndex(owner => owner.email === email && owner.unique_id === uniqueId);
   };
 
   const [valueTokens, setValueTokens] = useState(0);
@@ -111,9 +115,14 @@ const BuyCard = ({ asset, showViewButton, showBuyButton }) => {
     setConfirmationVisible(false);
   };
 
+    // Find the index of the owner who put the sale
+  const saleOwnerIndex = owner_details.findIndex(owner => owner.email === saleOwnerEmail);
+  // If the sale owner index is found, use it, otherwise use the currentOwnerIndex
+  const ownerIndexToShow = saleOwnerIndex !== -1 ? saleOwnerIndex : currentOwnerIndex;
+
   const handleProceed = () => {
     // Assuming you have an API endpoint to fetch user details from your database
-    axios.get(`http://localhost:3001/users/details/${email}`)
+    axios.get(`http://localhost:3001/users/details/${loginemail}`)
       .then(response => {
         const userData = response.data;
         console.log("buyer:", userData);
@@ -138,7 +147,7 @@ const BuyCard = ({ asset, showViewButton, showBuyButton }) => {
           console.log("Request details recorded:", updatedRequestDetails);
   
           // Move axios.post inside the handleProceed function
-          axios.post(`http://localhost:3001/properties/request-data-update/${owner_details[currentOwnerIndex].account_id}`, updatedRequestDetails)
+          axios.post(`http://localhost:3001/properties/request-data-update/${owner_details[index].account_id}`, updatedRequestDetails)
             .then(response => {
               const reply = response.data;
               if (reply === "Success") {
@@ -175,8 +184,13 @@ const BuyCard = ({ asset, showViewButton, showBuyButton }) => {
         <p className="text-sm text-gray-700 mb-1">Asset ID: {unique_id}</p>
         <p className="text-sm text-gray-700 mb-1">Address: {address}</p>
         <p className="text-sm text-gray-700 mb-1">Property cost: {value} USD</p>
-        <p className="text-sm text-gray-700 mb-1">Owner ID: {owner_details[currentOwnerIndex].account_id} </p>
-        <p className="text-sm text-gray-700 mb-1">Sell Percentage: {owner_details[currentOwnerIndex].selling_details.sell_percentage} %</p>
+        {ownerIndexToShow !== -1 && (
+          <>
+            <p className="text-sm text-gray-700 mb-1">Owner ID: {owner_details[ownerIndexToShow].account_id}</p>
+            <p className="text-sm text-gray-700 mb-1">Sell Percentage: {owner_details[ownerIndexToShow].selling_details.sell_percentage} %</p>
+          </>
+        )}
+
 
         <AssetButtons
           onViewClick={showDetailView}
