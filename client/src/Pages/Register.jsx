@@ -15,18 +15,7 @@ function Register(){
     const handleSubmit = (e) => {
       e.preventDefault();
   
-      // Check if passwords match
-      if (password === confirmPassword) {
-        axios.post('http://127.0.0.1:3001/users/register', { uname, email, password })
-          .then(result => {
-            console.log(result);
-            navigate("/login");
-          })
-          .catch(err => console.log(err));
-      } else {
-        // Set password match error
-        setPasswordMatchError(true);
-      }
+      console.log("register handler");
     };
   
 

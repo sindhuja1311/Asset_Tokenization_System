@@ -1,8 +1,60 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { connectWallet, checkWallet } from "../services/functions"; // Import both functions from functions.js
 import { useNavigate } from "react-router-dom";
+import { setWallet } from "../redux/actions/globalActions";
+import {Provider, connect} from "react-redux";
+
 function HomePage() {
+  const [notification, setNotification] = useState(null); // State for notification
+  const [notificationClosed, setNotificationClosed] = useState(false); // State to track manual notification close
+  const navigate = useNavigate();
+  
+  const handleConnectWallet = async () => {
+    
+    try {
+      await connectWallet(); // Call connectWallet function
+
+      // Set notification
+      setNotification({
+        success: true,
+        message: "Wallet connected successfully!",
+      });
+
+      // Automatically close notification after 3 seconds
+      const timeoutId = setTimeout(() => {
+        if (notificationClosed) {
+          setNotification(null);
+          navigate("/userdash");
+        }
+        else{
+          setNotification(null);
+          navigate("/userdash");
+        }
+      }, 3000);
+      
+
+      // Call checkWallet function to continuously monitor wallet changes
+      await checkWallet();
+      const accounts = await ethereum.request?.({ method: 'eth_requestAccounts' });
+      console.log("acct:",accounts);
+      setWallet(accounts?.[0]);
+      // Clear the timeout when the notification is closed manually
+      return () => clearTimeout(timeoutId);
+    } catch (error) {
+      setNotification({
+        success: false,
+        message: "Failed to connect wallet: " + error.message,
+      });
+    }
+  };
+
+  const handleCloseNotification = () => {
+    // Set notificationClosed to true when the notification is closed manually
+    setNotificationClosed(true);
+    setNotification(null);
+  };
+
   return (
     <div>
         {/* header */}
@@ -36,9 +88,10 @@ function HomePage() {
           <p className="text-sm md:text-base lg:text-lg mb-4 md:mb-8">
             Seamless asset management and ownership on a decentralized platform. Discover the future of property investment.
           </p>
-          <Link to="/register" className="inline-block px-6 py-3 bg-green-500 text-white text-base md:text-lg font-semibold rounded-full transition duration-300 hover:bg-green-600">
+          
+          <button onClick={handleConnectWallet} className="inline-block px-6 py-3 bg-green-500 text-white text-base md:text-lg font-semibold rounded-full transition duration-300 hover:bg-green-600">
             Get Started
-          </Link>
+        </button>
         </div>
       </div>
 
@@ -93,7 +146,7 @@ function HomePage() {
                 <div className="contact-heading mb-7 text-3xl font-bold text-gray-700">
                 <h2>Contact Us</h2>
                 </div>
-                <div className="contact-form max-w-150 mb-0 mt-auto">
+                <div className="contact-form max-w-150 mb-0 mt-auto"> {/*waaaaah*/ }
                 <form>
                     <div className="form-group mb-5">
                     <label htmlFor="name" className=" block text-xl mb-2 text-gray-700">Your Name:</label>
@@ -111,9 +164,31 @@ function HomePage() {
                 </form>
                 </div>
             </div>
+        
+    {/* Notification component */}
+    {notification && (
+            <div
+              className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 max-w-full rounded-lg ${
+                notification.success ? "bg-green-500 text-white" : "bg-red-500 text-white"
+              }`}
+              style={{ zIndex: 9999 }} // Ensure notification is on top
+            >
+              <div className="flex items-center justify-between rounded-t-lg border-b-2 border-white px-4 pb-2 pt-2.5">
+                <p className="font-bold">{notification.success ? "Success" : "Error"}</p>
+                <button type="button" onClick={handleCloseNotification} className="ml-2 focus:outline-none">
+                  <span className="text-white">×</span>
+                </button>
+              </div>
+              <div className="break-words rounded-b-lg bg-white px-4 py-4 text-black">
+                {notification.message}
+              </div>
+            </div>
+          )}
+
     </div>
    
   );
 }
 
-export default HomePage;
+
+export default connect(null, { setWallet })(HomePage); 

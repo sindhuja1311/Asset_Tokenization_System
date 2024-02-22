@@ -7,9 +7,7 @@ import AssetButtons from './AssetButtons';
 
 const AssetCard1 = ({ asset, showViewButton, showSellButton}) => {
   const navigate = useNavigate();
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const email = queryParams.get("email");
+  
   const {
     owner_details,
     location,
@@ -50,14 +48,7 @@ const AssetCard1 = ({ asset, showViewButton, showSellButton}) => {
     setFormVisible(true);
   };
   const handleSubmitSell = async (email, unique_id, percentage) => {
-    try {
-      // Send a POST request to the backend to update the property status
-      await axios.post(`http://localhost:3001/properties/sell/${email}/${unique_id}`, { percentage });
-      alert('Property status updated successfully');
-    } catch (error) {
-      console.error('Error selling property:', error);
-      alert('Error selling property. Please try again later.');
-    }
+    console.log("handle submit sell");
   };
 
 

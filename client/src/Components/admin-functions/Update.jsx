@@ -20,21 +20,7 @@ const Update = () => {
 
   useEffect(() => {
     const fetchAssetDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/asset/${unique_id}`);
-        console.log('Fetched Asset Details:', response.data);
-
-        const sanitizedData = {
-          ...response.data,
-          images: response.data.images || [],
-          owner_details: response.data.owner_details || [],
-          ownership_proof: response.data.ownership_proof || null,
-        };
-
-        setFormData(sanitizedData);
-      } catch (error) {
-        console.error('Error fetching asset details:', error);
-      }
+     console.log("useffect");
     };
 
     fetchAssetDetails();
@@ -52,44 +38,8 @@ const Update = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const formDataToSend = new FormData();
-
-      for (const key in formData) {
-        if (formData.hasOwnProperty(key)) {
-          if (Array.isArray(formData[key])) {
-            formData[key].forEach((item, index) => {
-              formDataToSend.append(`${key}_${index + 1}`, item);
-            });
-          } else {
-            formDataToSend.append(key, formData[key]);
-          }
-        }
-      }
-
-      const response = await axios.put(`http://localhost:3001/properties/update-asset/${unique_id}`, formDataToSend);
-
-      if (response.status === 200 || response.status === 201) {
-        setFormData({
-          unique_id: '',
-          name: '',
-          address: '',
-          description: '',
-          location: '',
-          images: [],
-          owner_details: [],
-          ownership_proof: null,
-          value: '',
-        });
-        showNotification('Property updated successfully', true);
-      } else {
-        showNotification('Failed to update property. Please try again.', false);
-        console.error('Failed to update property. Server returned:', response.status);
-      }
-    } catch (error) {
-      showNotification('Failed to update property. Please try again.', false);
-      console.error('Error:', error);
-    }
+   console.log("handlesubmit");
+    
   };
 
   const showNotification = (message, success = true) => {

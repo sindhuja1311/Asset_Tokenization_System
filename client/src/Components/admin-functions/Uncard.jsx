@@ -38,22 +38,12 @@ const Uncard = ({ asset }) => {
   };
 
   const handleapprove = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/properties/update-approval', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ unique_id }),
-      });
   
-      if (response.ok) {
-        console.log('Asset approved successfully');
-      } else {
-        console.error('Failed to approve asset');
-      }
+    try {
+     
+      console.log('Property listing approved successfully');
     } catch (error) {
-      console.error('Error approving asset:', error);
+      console.error('Error approving property listing:', error);
     }
   };
   

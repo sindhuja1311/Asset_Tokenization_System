@@ -9,30 +9,8 @@ function BuyInvest() {
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState('AVAILABLE');
   const [ownerIndex, setOwnerIndex] = useState(null);
-  
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const loginemail = queryParams.get("email");
 
-  useEffect(() => {
-    const fetchAllAssets = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/upforsale/${loginemail}`);
-        console.log('Response from server:', response.data); // Log the response data
-        
-        const { allAssets, ownerIndex } = response.data;
-  
-        setAllAssets(allAssets);
-        setFilteredAssets(allAssets);
-        setOwnerIndex(ownerIndex);
-  
-      } catch (error) {
-        console.error('Error fetching all assets:', error);
-      }
-    };
-  
-    fetchAllAssets();
-  }, [loginemail]);
+ 
   
   const handleSearch = () => {
     const searchTermLowerCase = searchTerm.toLowerCase();
@@ -43,20 +21,7 @@ function BuyInvest() {
   };
 
   const handleFilter = async (criteria) => {
-    setFilterCriteria(criteria);
-    try {
-      if (criteria === 'AVAILABLE') {
-        
-        const response = await axios.get(`http://localhost:3001/properties/upforsale/${loginemail}`);
-        setFilteredAssets(response.data);
-      } else if (criteria === 'IN PROGRESS') {
-        const response = await axios.get(`http://localhost:3001/properties/inprogress/${loginemail}`);
-        setFilteredAssets(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching assets:', error);
-      setFilteredAssets([]); // Reset filteredAssets if an error occurs
-    }
+    console.log("handle filter");
   };
 
   return (

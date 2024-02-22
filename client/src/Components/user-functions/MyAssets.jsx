@@ -15,20 +15,7 @@ function MyAssets() {
 
   useEffect(() => {
     const fetchAllAssets = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/user-assets/${email}`);
-        console.log('Response from server:', response.data); // Log the response data
-        
-        const { allAssets, ownerIndex } = response.data;
-  
-        // Set all assets and owner index
-        setAllAssets(allAssets);
-        setFilteredAssets(allAssets);
-        setOwnerIndex(ownerIndex); // Assuming you have a state variable for ownerIndex
-  
-      } catch (error) {
-        console.error('Error fetching all assets:', error);
-      }
+      console.log("useffect");
     };
   
     fetchAllAssets();

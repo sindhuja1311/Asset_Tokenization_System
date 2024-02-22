@@ -9,6 +9,7 @@ import AssetCard from './Components/admin-functions/AssetCard';
 import Update from './Components/admin-functions/Update';
 import Approve from './Components/admin-functions/Approve';
 import Uncard from './Components/admin-functions/Uncard';
+import ApproveUsers from './Components/admin-functions/ApproveUsers'
 // Pages
 import HomePage from './Pages/HomePage';
 import Register from './Pages/Register';
@@ -30,6 +31,7 @@ function App() {
         <Route path="/asset-card" element={<AssetCard />} />
         <Route path="/update-asset/:unique_id" element={<Update />} />
         <Route path="/approve-asset" element={<Approve />} />
+        <Route path="/approve-users" element={<ApproveUsers />} />
         <Route path="/uncard" element={<Uncard />} />
       </Routes>
     </BrowserRouter>

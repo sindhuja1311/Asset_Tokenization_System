@@ -7,9 +7,6 @@ import AssetButtons from './AssetButtons';
 
 const BuyCard = ({ asset, showViewButton, showBuyButton ,saleOwnerEmail}) => {
   const navigate = useNavigate();
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const loginemail = queryParams.get("loginemail");
   const {
     owner_details,
     location,
@@ -57,9 +54,6 @@ const BuyCard = ({ asset, showViewButton, showBuyButton ,saleOwnerEmail}) => {
     setFormVisible(true);
   };
 
-  const ownerIndexByEmailAndUniqueId = (email, uniqueId) => {
-    return owner_details.findIndex(owner => owner.email === email && owner.unique_id === uniqueId);
-  };
 
   const [valueTokens, setValueTokens] = useState(0);
   const [liquidTokens, setLiquidTokens] = useState(0);
@@ -116,57 +110,10 @@ const BuyCard = ({ asset, showViewButton, showBuyButton ,saleOwnerEmail}) => {
   };
 
     // Find the index of the owner who put the sale
-  const saleOwnerIndex = owner_details.findIndex(owner => owner.email === saleOwnerEmail);
-  // If the sale owner index is found, use it, otherwise use the currentOwnerIndex
-  const ownerIndexToShow = saleOwnerIndex !== -1 ? saleOwnerIndex : currentOwnerIndex;
 
   const handleProceed = () => {
     // Assuming you have an API endpoint to fetch user details from your database
-    axios.get(`http://localhost:3001/users/details/${loginemail}`)
-      .then(response => {
-        const userData = response.data;
-        console.log("buyer:", userData);
-  
-        // Check if userData contains the full_name field
-        if (userData && userData.user && userData.user.full_name) {
-          // Create the updated request details object
-          const updatedRequestDetails = {
-            buyer_name: userData.user.full_name,
-            account_id: userData.user.uname,
-            metamask_id: userData.user.metamask_id,
-            email: userData.user.email,
-            value_type_count: valueTokens,
-            liquid_type_count: liquidTokens,
-            response_status: "pending"
-          };
-  
-          // Assuming you have a state setter function named setConfirmationVisible to update the visibility
-          setConfirmationVisible(false);
-  
-          // Log the updated request details
-          console.log("Request details recorded:", updatedRequestDetails);
-  
-          // Move axios.post inside the handleProceed function
-          axios.post(`http://localhost:3001/properties/request-data-update/${owner_details[index].account_id}`, updatedRequestDetails)
-            .then(response => {
-              const reply = response.data;
-              if (reply === "Success") {
-                console.log("Request Sent Successfully");
-              } else {
-                console.log("Request Unsuccessful, try again");
-              }
-            })
-            .catch(error => {
-              console.error('Error updating request data:', error); // Log error
-            });
-        } else {
-          console.log("Full name not found in userData.");
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching user details:', error); // Log error
-        // Handle error properly, e.g., show an error message to the user
-      });
+    console.log("handle proceed");
   };
   
   

@@ -1,7 +1,4 @@
-// Approve.jsx
-
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Uncard from './Uncard';
 import { Link } from 'react-router-dom';
 
@@ -13,10 +10,9 @@ function Approve() {
   useEffect(() => {
     const fetchAllAssets = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/properties/unapproved');
-        setAllAssets(response.data);
+        console.log("fetching");
       } catch (error) {
-        console.error('Error fetching all assets:', error);
+        console.error('Error fetching assets:', error);
       }
     };
 
@@ -35,23 +31,22 @@ function Approve() {
     <div className="bg-gray-100 h-screen font-sans">
       <div className="container mx-auto p-8">
         <div className="mb-8 ml-8 mt-2">
-    <button
-        onClick={() => window.history.back()}
-        className="flex items-center justify-center w-1/2 px-5 py-2 text-sm transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto hover:bg-gray-200 dark:text-gray-200 dark:border-gray-700"
-    >
-        <svg
-            className="w-6 h-6 rtl:rotate-180 text-black transition-transform transform hover:scale-110"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center justify-center w-1/2 px-5 py-2 text-sm transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto hover:bg-gray-200 dark:text-gray-200 dark:border-gray-700"
+          >
+            <svg
+              className="w-6 h-6 rtl:rotate-180 text-black transition-transform transform hover:scale-110"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
             >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
             </svg>
-
-    </button>
-    </div>
+          </button>
+        </div>
 
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-3xl font-bold mb-6 text-blue-500">Approve Assets</h2>

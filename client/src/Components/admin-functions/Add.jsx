@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 function generateUniqueId() {
   return uuidv4();
 }
+
 function Add() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     unique_id: generateUniqueId(),
     name: '',
-    address: '',
+    propertyAddress: '',
     description: '',
     location: '',
     images: [],
     owner_details:{
-    owner_name: '',
-    metamask_id: '',
-    account_id: '',
-    email:'',
+      owner_name: '',
+      metamask_id: '',
+      account_id: '',
+      email:'',
     },
     ownership_proof: '',
     value: '',
@@ -27,7 +25,7 @@ function Add() {
 
   const [notification, setNotification] = useState(null);
 
-  const handleChange = (e) => {
+    const handleChange = (e) => {
     const { name, type, value, files } = e.target;
 
     setFormData((prevFormData) => {
@@ -44,6 +42,8 @@ function Add() {
       };
     });
   };
+  
+  
 
   const showNotification = (message, success = true) => {
     setNotification({ message, success });
@@ -52,67 +52,18 @@ function Add() {
       setNotification(null);
     }, 5000);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    const formDataToSend = new FormData();
-  
-    // Append regular fields to formDataToSend
-    Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          formDataToSend.append(`${key}_${index + 1}`, item);
-        });
-      } else if (key === 'owner_details') {
-        // Append owner_details fields individually
-        Object.entries(value).forEach(([ownerKey, ownerValue]) => {
-          formDataToSend.append(`owner_details_${ownerKey}`, ownerValue);
-        });
-      } else {
-        formDataToSend.append(key, value);
-      }
-    });
-  
-    try {
-      const response = await axios.post('http://localhost:3001/properties/add-asset', formDataToSend);
-  
-      if (response.status === 201) {
-        showNotification('Property added successfully', true);
-        setFormData({
-          unique_id: generateUniqueId(),
-          name: '',
-          address: '',
-          description: '',
-          location: '',
-          images: [],
-          owner_details: {
-            owner_name: '',
-            metamask_id: '',
-            account_id: '',
-            email:"",
-          },
-          ownership_proof: null,
-          value: '',
-        });
-      } else {
-        showNotification('Failed to add property. Please try again.', false);
-        console.error('Failed to add property. Server returned:', response.status);
-      }
+    try{
+      console.log("handle submit");
     } catch (error) {
-      showNotification('Failed to add property. Please try again.', false);
-      console.error('Error:', error);
-      if (error.response) {
-        console.error('Server responded with:', error.response.data);
-        console.error('Status:', error.response.status);
-        console.error('Headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-      } else {
-        console.error('Error setting up the request:', error.message);
-      }
+      // Show error notification
+      showNotification('Failed to request property listing', false);
+      console.error('Error requesting property listing:', error);
     }
   };
-  
+    
   return (
     <>
       <div className="mb-8 ml-8 mt-5">
@@ -160,8 +111,8 @@ function Add() {
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-600">Address</label>
           <textarea
-            name="address"
-            value={formData.address}
+            name="propertyAddress"
+            value={formData.propertyAddress}
             onChange={(e) => handleChange(e)}
             className="mt-1 p-2 border border-gray-300 rounded-md w-full"
           />

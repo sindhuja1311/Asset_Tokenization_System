@@ -20,24 +20,7 @@ const handlePasswordChange = (e) => {
 }
 
 const handleSubmit = (e) => {
-    e.preventDefault();
-    // Check if email is not empty
-    if (!email) {
-        console.log("Email is required");
-        return;
-    }
-    // Send email and password to the server for authentication
-    axios.post('http://127.0.0.1:3001/users/login', { email, password })
-        .then(result => {
-            console.log(result);
-            if (result.data.success) { // Check if login was successful
-                navigate(`/userdash?email=${email}`); // Redirect to userdash
-            } else {
-                // Handle unsuccessful login (optional)
-                console.log(result.data.message);
-            }
-        })
-        .catch(err => console.log(err));
+    console.log("login handling");
 }
 
 

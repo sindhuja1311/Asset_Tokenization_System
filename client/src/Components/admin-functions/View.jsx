@@ -12,12 +12,7 @@ function View() {
 
   useEffect(() => {
     const fetchAllAssets = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/properties/all-assets');
-        setAllAssets(response.data);
-      } catch (error) {
-        console.error('Error fetching all assets:', error);
-      }
+      console.log("useffect");
     };
 
     fetchAllAssets();

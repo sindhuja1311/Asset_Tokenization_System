@@ -21,18 +21,7 @@ const RequestCard = ({ asset, index, showViewButton }) => {
   const [requestDetails, setRequestDetails] = useState([]);
 
   const toggleRequestDetails = async () => {
-    if (!isRequestDetailsVisible) {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/requests/${asset.unique_id}/${loginemail}`);
-        setRequestDetails(response.data);
-        setRequestDetailsVisible(true);
-      } catch (error) {
-        console.error('Error fetching request details:', error);
-      }
-    } else {
-      setRequestDetails([]);
-      setRequestDetailsVisible(false);
-    }
+    console.log("handle");
   };
 
   const handleApprove = async (index) => {
@@ -52,12 +41,7 @@ const handleDecline = async (index) => {
 };
 
 const handleAction = async (action,index) => {
-    try {
-        await axios.put(`http://localhost:3001/properties/requests/${action}/${loginemail}/${requestDetails[index].account_id}/${unique_id}`);
-        // Optionally, you can update the UI or perform other actions upon success
-    } catch (error) {
-        console.error(`Error ${action}ing request:`, error);
-    }
+    console.log("handle");
 };
 
   return (

@@ -11,10 +11,6 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 function UserDashboard() {
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const email = queryParams.get("email");
-
   // Use state to manage the active component
   const [activeComponent, setActiveComponent] = useState(() => {
     // On component mount, check if there's an active component in session storage
@@ -31,7 +27,7 @@ function UserDashboard() {
   const renderComponent = (component) => {
     switch (component) {
       case "my-assets":
-        return <MyAssets email={email} />;
+        return <MyAssets  />;
       case "buy-invest":
         return <BuyInvest />;
       case "requests":
@@ -39,7 +35,7 @@ function UserDashboard() {
       case "pendings":
         return <Pendings />;
       case "user-profile":
-        return <UserProfile email={email} />;
+        return <UserProfile  />;
       case "asset-upload":
         return <AssetUpload />;
       case "logout":
@@ -101,13 +97,13 @@ function UserDashboard() {
         {renderComponent(activeComponent)}
         
           <Routes>
-            <Route path="/my-assets" element={<MyAssets email={email}/>} />
-            <Route path="/buy-invest" element={<BuyInvest email={email} />} />
-            <Route path="/requests" element={<Requests email={email}/>} />
-            <Route path="/pendings" element={<Pendings email={email}/>} />
-            <Route path="/user-profile" element={<UserProfile email={email} />} />
-            <Route path="/asset-upload" element={<AssetUpload email={email}/>} />
-            <Route path="/logout" element={<Logout email={email}/>} />
+            <Route path="/my-assets" element={<MyAssets />} />
+            <Route path="/buy-invest" element={<BuyInvest  />} />
+            <Route path="/requests" element={<Requests />} />
+            <Route path="/pendings" element={<Pendings />} />
+            <Route path="/user-profile" element={<UserProfile  />} />
+            <Route path="/asset-upload" element={<AssetUpload />} />
+            <Route path="/logout" element={<Logout />} />
           </Routes>
         
       </div>

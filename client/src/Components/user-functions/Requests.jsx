@@ -7,29 +7,12 @@ function Requests() {
     const [searchTerm, setSearchTerm] = useState('');
     const [allAssets, setAllAssets] = useState([]);
     const [ownerIndex, setOwnerIndex] = useState(null); // Declare ownerIndex state
-    const { search } = useLocation();
-    const queryParams = new URLSearchParams(search);
-    const email = queryParams.get("email");
-    const [filteredAssets, setFilteredAssets] = useState([]);
     const [filterType, setFilterType] = useState('all');
   
 
   useEffect(() => {
     const fetchAllAssets = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/properties/user-assets/${email}`);
-        console.log('Response from server:', response.data); // Log the response data
-        
-        const { allAssets, ownerIndex } = response.data;
-  
-        // Set all assets and owner index
-        setAllAssets(allAssets);
-        setFilteredAssets(allAssets);
-        setOwnerIndex(ownerIndex); // Assuming you have a state variable for ownerIndex
-  
-      } catch (error) {
-        console.error('Error fetching all assets:', error);
-      }
+      console.log("fetch user assets");
     };
   
     fetchAllAssets();
@@ -66,11 +49,12 @@ function Requests() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/*
           {filteredAssets.map((asset) => (
             (asset.owner_details.some(owner => owner.status === 'partial sale') || asset.owner_details.some(owner => owner.status === 'full sale')) && (
               <RequestCard email={email} key={asset.unique_id} index={ownerIndex} showViewButton showRequestButton asset={asset} readOnly />
             )
-          ))}
+            ))}*/}
         </div>
       </div>
     </div>

@@ -57,65 +57,7 @@ function AssetUpload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-
-    // Append regular fields to formDataToSend
-    Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          formDataToSend.append(`${key}_${index + 1}`, item);
-        });
-      } else if (key === 'owner_details') {
-        // Append owner_details fields individually
-        Object.entries(value).forEach(([ownerKey, ownerValue]) => {
-          formDataToSend.append(`owner_details_${ownerKey}`, ownerValue);
-        });
-      } else {
-        formDataToSend.append(key, value);
-      }
-    });
-
-    try {
-      const response = await axios.post(
-        'http://localhost:3001/properties/request-add-asset',
-        formDataToSend
-      );
-
-      if (response.status === 201) {
-        showNotification('Property added successfully', true);
-        setFormData({
-          unique_id: generateUniqueId(),
-          name: '',
-          address: '',
-          description: '',
-          location: '',
-          images: [],
-          owner_details: {
-            owner_name: '',
-            metamask_id: '',
-            account_id: '',
-            email: '',
-          },
-          ownership_proof: null,
-          value: '',
-        });
-      } else {
-        showNotification('Failed to add property. Please try again.', false);
-        console.error('Failed to add property. Server returned:', response.status);
-      }
-    } catch (error) {
-      showNotification('Failed to add property. Please try again.', false);
-      console.error('Error:', error);
-      if (error.response) {
-        console.error('Server responded with:', error.response.data);
-        console.error('Status:', error.response.status);
-        console.error('Headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-      } else {
-        console.error('Error setting up the request:', error.message);
-      }
-    }
+    console.log("handle add asset request");
   };
 
   return (

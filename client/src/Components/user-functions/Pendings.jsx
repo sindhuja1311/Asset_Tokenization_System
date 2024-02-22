@@ -37,22 +37,13 @@ function Pendings() {
     const [pendingRequests, setPendingRequests] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { search } = useLocation();
-    const queryParams = new URLSearchParams(search);
-    const email = queryParams.get("email");
 
     useEffect(() => {
         const fetchPendingRequests = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/properties/pending/${email}`);
-                console.log('Pending Requests:', response.data);
-                setPendingRequests(response.data);
-            } catch (error) {
-                console.error('Error fetching pending requests:', error);
-            }
+            console.log("useffect");
         };
         fetchPendingRequests();
-    }, [email]);
+    }, []);
 
     const handleViewDetails = (request) => {
         setSelectedRequest(request);
