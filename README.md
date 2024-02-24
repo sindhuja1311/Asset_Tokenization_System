@@ -1,13 +1,41 @@
 # Asset Tokenization System // Asset Management System
 
 ## Introduction
-This project aims to create a decentralized application for property management through tokenization using ERC-20 (Fungible tokens) on the Ethereum blockchain. Each property is assigned tokens with a value of 1/-, and platform charges are applied based on specific criteria.
+
+This project aims to create a decentralized application for property management through tokenization using ERC-20 (Fungible tokens) on the Ethereum blockchain. Each property is assigned tokens of two types 
+a) Value Based Tokens
+b) Liquid Based Tokens
+and there is a Platform Fee of a certain charge for an asset to be listed.
 
 ## Tokenization
-The original idea was to make each token worth 1000/-. However, a challenge emerged where different-cost properties resulted in the same number of tokens, creating a lack of differentiation based on market value. Additionally, the platform charges were not reflective of the property's market value.
-
+The original idea was to allot tokens for a property,
+  i) Value Based : each value token holds the value based on the property price .
+  ii) Liquid Based : each liquid token holds te value based on the exchange value with respective to erc20 token.
+  every apporved property will be listed into the platform and each property will be allocated with equal amount of tokens (be 1000) , and all 1000 tokens will be divided to 500 tokens each.
+  
+  
 ### Current Tokenization Approach
+With the help of these two tokens we will approach the tokenization concept ,
+ However, a challenge emerged where different-cost properties resulted in the same number of tokens, creating a lack of differentiation based on market value. Additionally, the platform charges were not reflective of the property's market value.
+
+ ### Example Scenario
+
+- **Property 1:** (with 2 types of token concept)
+  - Cost: 100000
+  - Tokens: 1000
+  - Value tokens - 500 (value of 1.5 let be)
+  - Liquid Tokens - 500 (value of 1 let be)
+  - Platform charge: 2% tokens or amount ( done by listing the property)
+
+- **Property 2:** (another approach)
+  - Cost: 12,33,500
+  - Tokens: 1233500 // 1000 = 1233 tokens
+  - Platform charge: 1233500 % 1000 = 500/- tokens or amount
+ 
 Currently, the project is proceeding with a 1/- token, but this may lead to a large number of tokens being generated. Ongoing discussions and considerations are in place to explore alternative solutions that address the issues of differentiation and charges. Contributions and suggestions are encouraged to enhance the tokenization system.
+
+Updated (22nd feb):
+  - Currently we are using the two tokens concept but are welcomed 
 
 # Tokenization Challenges and Ongoing Considerations
 
@@ -15,17 +43,7 @@ Currently, the project is proceeding with a 1/- token, but this may lead to a la
 
 The initial idea was to assign a value of 1000/- to each token. However, challenges arose when different-cost properties resulted in the same number of tokens, leading to a lack of differentiation based on market value. Additionally, the platform charges were not reflective of the property's market value.
 
-### Example Scenario
 
-- **Property 1:**
-  - Cost: 12,33,445
-  - Tokens: 1233445/1000 = 1233 tokens
-  - Platform charge: 1233445 % 1000 = 445/- tokens or amount
-
-- **Property 2:**
-  - Cost: 12,33,500
-  - Tokens: 1233500 // 1000 = 1233 tokens
-  - Platform charge: 1233500 % 1000 = 500/- tokens or amount
 
 In this scenario, both Property 1 and Property 2 have different costs but are worth the same tokens. This lack of differentiation based on market value poses a significant issue, as distinct market-valued properties should not have the same number of tokens.
 
@@ -42,11 +60,10 @@ Your insights and proposed solutions are crucial as the project evolves. Feel fr
    - Ethereum blockchain
    - Solidity for smart contracts
    - Sepholia testnet for ERC currency
-   - Web3 platform
-   - Metamask wallet
+   - Ether.js library
+   - Metamask wallet or any wallet of choice
 2. **User Interface:**
-   - MERN stack (MongoDB, Express.js, React.js, Node.js)
-   - HTML, CSS, JS
+   - Reactjs + Vite, Express.js, Node.js , Redux , TailWind CSS
 
 ## Functionality
 
