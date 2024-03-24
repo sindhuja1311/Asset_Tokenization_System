@@ -132,14 +132,6 @@ function AdminDashboard() {
               <ul className="admin-dashboard-list list-none p-0">
                 <li className="mb-3 md:mb-4 transform hover:scale-103">
                   <Link
-                    to="/add-asset"
-                    className="flex items-center justify-center decoration-none text-blue-500 font-bold text-lg pl-4 pr-8 border-blue-500 border-2 border-solid rounded-lg transition duration-300 ease-in-out hover:text-white hover:bg-blue-500 h-14"
-                  >
-                    Add Assets
-                  </Link>
-                </li>
-                <li className="mb-3 md:mb-4 transform hover:scale-103">
-                  <Link
                     to="/approve-users"
                     className="flex items-center justify-center decoration-none text-blue-500 font-bold text-lg pl-4 pr-8 border-blue-500 border-2 border-solid rounded-lg transition duration-300 ease-in-out hover:text-white hover:bg-blue-500 h-14"
                   >
@@ -160,6 +152,14 @@ function AdminDashboard() {
                     className="flex items-center justify-center decoration-none text-blue-500 font-bold text-lg pl-4 pr-8 border-blue-500 border-2 border-solid rounded-lg transition duration-300 ease-in-out hover:text-white hover:bg-blue-500 h-14"
                   >
                     Approve Assets
+                  </Link>
+                </li>
+                <li className="mb-3 md:mb-4 transform hover:scale-103">
+                  <Link
+                    to="/list-asset"
+                    className="flex items-center justify-center decoration-none text-blue-500 font-bold text-lg pl-4 pr-8 border-blue-500 border-2 border-solid rounded-lg transition duration-300 ease-in-out hover:text-white hover:bg-blue-500 h-14"
+                  >
+                    List Assets
                   </Link>
                 </li>
               </ul>

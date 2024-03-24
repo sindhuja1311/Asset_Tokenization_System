@@ -5,6 +5,8 @@ import { getUserDetails } from "../../services/functions";
 
 function UserProfile() {
     const metamaskId = useSelector(state => state.global.wallet);
+    const userAddress=metamaskId;
+    console.log(metamaskId);
     const [userDetails, setUserDetails] = useState({
         id: metamaskId || '',
         email: 'Not provided',

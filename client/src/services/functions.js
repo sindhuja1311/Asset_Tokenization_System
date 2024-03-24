@@ -128,6 +128,8 @@ const isUserVerified = async(user_address)=>{
     }
 }
 
+
+
 const isUserRegistered = async(user_address)=>{
     try{
         const contract = await getEthereumContract();
@@ -176,7 +178,6 @@ const addInspectorDetails = async(inspector_address, inspector_name, age, design
             const contract = await getEthereumContract();
             const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
             const inspector = await contract.isPropertyInspector(id);
-
             return inspector;
         }
         catch (error) {
@@ -198,6 +199,195 @@ const addInspectorDetails = async(inspector_address, inspector_name, age, design
         }
     }
 
+    const userRequestPropertyUpload = async (pname, propertyAddress, description, loaction, value, imagesCID, ownership_proofCID) => {
+        try {
+          const contract = await getEthereumContract();
+          const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+          const name = pname;
+          const images=imagesCID;
+          const ownership_proof=ownership_proofCID;
+          console.log("images", images); // Log images array for debugging
+          console.log("ownership_proof", ownership_proof); // Log ownership_proof array for debugging
+          const propertyDetails = await contract.addProperty(name, propertyAddress, description, loaction, value, images, ownership_proof, { from: accounts[0] });
+          console.log("New property added:", propertyDetails); // Log propertyDetails for debugging
+        } catch (error) {
+          console.error("Error adding property:", error); // Log error for debugging
+          reportError(JSON.parse(JSON.stringify(error))?.reason);
+          window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+      }
+      
+      const fetchAllPropeties = async () => {
+        try {
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const propertiesAddresses = await contract.ReturnAllPropertiesList();
+            return propertiesAddresses;
+        } catch (error) {
+            reportError(error.message);
+            console.error("Error fetching properties:", error);
+            throw error;
+        }
+    };
+    
+    const getUserPropertyDetails = async (userAddress) => {
+        try {
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const propertiesAddresses = await contract.getUserProperties(userAddress);
+            return propertiesAddresses;
+        } catch (error) {
+            reportError(error.message);
+            console.error("Error fetching properties:", error);
+            throw error;
+        }
+    }
+    
+    
+    
+    const isPropertyVerified =async(id)=>{
+        try{
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const status = await contract.isPropertyVerified(id);
+            return status;
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+    const verifyProperty =async(property_id)=>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const id=property_id;
+            console.log("id:",id);
+            await contract.verfifyProperty(id);
+            return 'success';
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+    const isPropertyOwner = async(id,userAddress) =>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const response = await contract.isPropertyOwner(id,userAddress);
+            return response;
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const requestPropertyListing = async(property_id,name,loaction,images)=>{
+        try{
+            console.log(parseInt(property_id['_hex'],16),name,loaction,images);
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            await contract.requestPropertyListing(parseInt(property_id['_hex'],16),name,loaction,images);
+            return 'requested successfully';
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const ReturnAllRequestedListingPropertiesList = async() =>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const requestList=await contract.ReturnAllRequestedListingPropertiesList();
+            console.log(requestList);
+            return requestList;
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const isPropertyRequested = async(property_id,userAddress) =>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const response=await contract.isPropertyRequested(property_id,userAddress);
+            return response;
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+    const AcceptListingRequest = async(property_id,userAddress) =>{
+        try{
+            console.log(property_id,userAddress);
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const user= await contract.isUserVerified(userAddress);
+            const prop=await contract.isPropertyVerified(property_id);
+            const propown=await contract.isPropertyOwner(property_id,userAddress);
+            console.log(user,prop,propown);
+            await contract.AcceptListingRequest(property_id,userAddress);
+            return "property successfully listed in the platform";
+            
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const getTokenBalances = async() =>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            const Tokens=await contract.getTokenBalances();
+             return Tokens;          
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const requestPropertyPart = async(property_id,userAddress,LiquidToken,propertyToken) =>{
+        try{
+            
+            const contract = await getEthereumContract();
+            const accounts = await ethereum?.request?.({ method: 'eth_requestAccounts' });
+            await contract.requestPropertyPart(property_id,userAddress,LiquidToken,propertyToken);
+            return "property Request sent successfully";          
+        }
+        catch (error) {
+            reportError(JSON.parse(JSON.stringify(error))?.reason);
+            window.alert(JSON.parse(JSON.stringify(error))?.reason);
+        }
+    }
+
+    const returnAllListedProperties = async()=>{
+        console.log("chapak");
+    }
+    const returnUserListedProperties =async(userAddress)=>{
+        console.log("chapak");
+    }
+
 
 export {
     connectWallet,
@@ -211,5 +401,19 @@ export {
     isUserRegistered,
     verifyUser,
     inspectorsList,
-    getUserDetails
+    getUserDetails,
+    userRequestPropertyUpload,
+    fetchAllPropeties,
+    getUserPropertyDetails,
+    verifyProperty ,
+    isPropertyVerified,
+    requestPropertyListing,
+    isPropertyOwner,
+    ReturnAllRequestedListingPropertiesList,
+    AcceptListingRequest,
+    getTokenBalances,
+    isPropertyRequested,
+    requestPropertyPart,
+    returnAllListedProperties,
+    returnUserListedProperties
 };

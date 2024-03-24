@@ -27,36 +27,36 @@ function UpdateProfile({ userDetails, onClose, onUpdate }) {
         }));
     };
     const handleChooseProfilePicture = (pronouns) => {
-        let pictureUrl = '/male_icon.png';
-        if (pronouns === 'she/her') {
-            pictureUrl = '/female_icon.png';
-        }
+        console.log("Selected pronouns:", pronouns);
         setEditedUserDetails(prevState => ({
             ...prevState,
             pronouns: pronouns
         }));
     };
     
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const { id, uname, pronouns, email, phone_num, aadharNumber, pan_card } = editedUserDetails; // Destructure the editedUserDetails object to access its properties
+    
             if (!id || !uname || !pronouns || !email || !phone_num || !aadharNumber || !pan_card) return;
     
             const user = {
-                uname: uname.value,
-                pronouns: pronouns === 'he/him' ? 'he/him' : 'she/her', // Set pronouns value based on the selected option
-                email: email.value,
-                phone_num: phone_num.value,
-                id: id.value,
-                aadharNumber: aadharNumber.value,
-                pan_card: pan_card.value
+                uname,
+                pronouns: pronouns === 'he/him' ? 'he/him' : 'she/her', // Ensure pronouns are set properly
+                email,
+                phone_num,
+                id,
+                aadharNumber,
+                pan_card
             };
     
             console.log(user);
     
             await addUserDetails(user.uname, user.email, user.phone_num, user.aadharNumber, user.pan_card, user.pronouns);
             console.log("Successfully added");
-
+    
         } catch (error) {
             console.log("Error:", error);
             console.log("Error - can't add");
@@ -76,11 +76,11 @@ function UpdateProfile({ userDetails, onClose, onUpdate }) {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <input type="radio" id="pronouns" name="pronouns" value="he/him" onChange={handleChange} checked={editedUserDetails.pronouns === 'he/him'} />
+                    <input type="radio" id="he_him" name="pronouns" value="he/him" onChange={handleChange} checked={editedUserDetails.pronouns === 'he/him'} />
                         <label htmlFor="he_him" className="ml-2">He/Him</label>
-                        <input type="radio" id="pronouns" name="pronouns" value="she/her" onChange={handleChange} checked={editedUserDetails.pronouns === 'she/her'} />
+                        <input type="radio" id="she_her" name="pronouns" value="she/her" onChange={handleChange} checked={editedUserDetails.pronouns === 'she/her'} />
                         <label htmlFor="she_her" className="ml-2">She/Her</label>
-                    </div>
+                            </div>
                     <div className="flex flex-wrap -mx-4">
         
                         <div className="w-full lg:w-1/2 px-4 mb-4">

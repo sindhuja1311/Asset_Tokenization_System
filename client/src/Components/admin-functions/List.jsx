@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
-import { getUserDetails,isPropertyVerified , getUserPropertyDetails, fetchAllPropeties, verifyProperty } from '../../services/functions';
+import { ReturnAllRequestedListingPropertiesList,AcceptListingRequest } from '../../services/functions';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel styles
 
-function Approve() {
+function List() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredAssets, setFilteredAssets] = useState([]);
-  const [propertyDetails, setPropertyDetails] = useState([]);
 
   useEffect(() => {
     const fetchAllPropertiesData = async () => {
       try {
-        const propertyDetails = await fetchAllPropeties();
+        const propertyDetails = await ReturnAllRequestedListingPropertiesList();
         setFilteredAssets(propertyDetails); // Set all assets initially
-        setPropertyDetails(propertyDetails);
       } catch (error) {
         console.error('Error fetching assets:', error);
       }
@@ -32,70 +30,22 @@ function Approve() {
     setFilteredAssets(filtered);
   };
 
-  const handleApprove = async(property_id) => {
-    console.log("prop:",property_id);
+  const ListTheProperty = async(property_id,userAddress)=>{
     try{
-        const status=await verifyProperty(property_id);
-        window.alert(status);
-        
-    }
-    catch(error){
-        console.error("couldnt approve:", error);
-    }
-    
-  };
-  const checkVer=async(property_id)=>{
-    try{
-        const status=await isPropertyVerified(property_id);
-        
-        return status;
-        
-    }
-    catch(error){
-        console.error("couldnt approve:", error);
-    }
+      console.log(property_id,userAddress);
+      const response = await AcceptListingRequest(property_id,userAddress);
+      console.log(response);  
+      
   }
-  const checkUser=async(owner)=>{
-    try{
-        
-        const userprops=await getUserPropertyDetails(owner);
-        console.log("user props are:",userprops);
+  catch(error){
+      console.error("couldnt approve:", error);
+  } 
+}
 
-        
-    }
-    catch(error){
-        console.error("couldnt approve:", error);
-    }
-  }
-    // Define filter options
-  const filterOptions = [
-    { label: 'Up for Verification', value: 'up_for_verification' },
-    { label: 'Verified', value: 'verified' },
-  ];
-  // Function to handle filter change
-  const handleFilterChange = (e) => {
-    // Update filter based on selected value
-    const selectedFilter = e.target.value;
-    console.log('Selected filter:', selectedFilter);
-
-    // Filter assets based on selected filter
-    switch (selectedFilter) {
-      case 'up_for_verification':
-        setFilteredAssets(propertyDetails.filter(asset => !asset.isPropertyVerified));
-        break;
-      case 'verified':
-        setFilteredAssets(propertyDetails.filter(asset => asset.isPropertyVerified));
-        break;
-      default:
-        // Reset filter to show all assets
-        setFilteredAssets(propertyDetails);
-        break;
-    }
-  };
+  
   return (
     <div className="bg-gray-100 min-h-screen font-sans">
       <div className="container mx-auto p-8">
-        {/* Search bar */}
         <div className="mb-8 ml-8 mt-2">
           <button
             onClick={() => window.history.back()}
@@ -118,8 +68,8 @@ function Approve() {
 
         {/* Main content */}
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold mb-6 text-blue-500">Approve Assets</h2>
-          {/* Search bar */}
+          <h2 className="text-3xl font-bold mb-6 text-blue-500">List Assets</h2>
+          {/* Search bar 
           <div className="mb-6 flex items-stretch">
             <input
               type="text"
@@ -135,17 +85,7 @@ function Approve() {
             >
               Search
             </button>
-            {/* Dropdown for filter */}
-          <select
-            onChange={handleFilterChange}
-            className="ml-4 px-4 py-2 text-lg font-normal leading-6 rounded border border-solid border-gray-300 focus:outline-none focus:border-primary focus:shadow-outline-primary"
-          >
-            <option value="">Filter</option>
-            {filterOptions.map((option, index) => (
-              <option key={index} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-          </div>
+          </div>*/}
           {/* Grid for displaying assets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Render filtered assets */}
@@ -178,49 +118,21 @@ function Approve() {
                     </Carousel>
                   </div>
                 )}
-                {/* Display ownership proof links */}
-                {asset.ownership_proof && asset.ownership_proof.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold mb-2">Ownership Proof</h3>
-                    <ul>
-                      {asset.ownership_proof.map((cid, index) => (
-                        <li key={index}>
-                          <a 
-                            href={`https://gateway.pinata.cloud/ipfs/${cid}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
-                          >
-                            [ {index + 1} ]
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 <div className="flex flex-col">
                   {/* Display asset details */}
                   <p className="text-gray-700 mb-2">ID: {parseInt(asset.property_id['_hex'], 16)}</p> 
                   <p className="text-gray-700 mb-2">Name: {asset.name}</p>
-                  <p className="text-gray-700 mb-2">Property Address: {asset.propertyAddress}</p>
-                  <p className="text-gray-700 mb-2">Description: {asset.description}</p>
+                  <p className="text-gray-700  text-sm mb-2">Owner: {asset.owner}</p>
                   <p className="text-gray-700 mb-2">Location: {asset.location}</p>
-                  <p className="text-gray-700 mb-2">Value: {asset.value ? asset.value.toString() : ''}</p>
-                  <p className="text-gray-700 mb-2">Verified: {asset.isPropertyVerified ? 'Yes' : 'No'}</p>
-                  <p className="text-gray-700 text-sm mb-2">Owner: {asset.owner}</p>
                   
-              {/* Render buttons based on verification status */}
-              {!asset.isPropertyVerified ? (
-                <div className="flex space-x-2">
-                  <button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500" onClick={() => handleApprove(parseInt(asset.property_id['_hex'], 16))}>
-                    Approve
-                  </button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={() => checkVer(parseInt(asset.property_id['_hex'], 16))}>
-                    Disapprove
-                  </button>
                 </div>
-              ) : <p className="text-green-700 font-extrabold   mb-2">VERIFIED</p>}
+                <div className="flex space-x-2">
+                  <button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500" onClick={() => ListTheProperty(parseInt(asset.property_id['_hex'], 16),asset.owner)}>
+                    List
+                  </button>
+                  <button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={() => ListTheProperty()}>
+                    Cancel
+                  </button>
                 </div>
               </div>
             ))}
@@ -231,4 +143,4 @@ function Approve() {
   );
 }
 
-export default Approve;
+export default List;

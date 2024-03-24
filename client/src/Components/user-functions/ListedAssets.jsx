@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
-import { ReturnAllRequestedListingPropertiesList,requestPropertyListing, getUserDetails, isPropertyVerified,isPropertyRequested, getUserPropertyDetails, fetchAllPropeties, verifyProperty } from '../../services/functions';
+import { returnUserListedProperties,requestPropertyListing, getUserDetails, isPropertyVerified,isPropertyRequested, getUserPropertyDetails, fetchAllPropeties, verifyProperty } from '../../services/functions';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel styles
 import { useSelector } from "react-redux";
 
-function MyAssets() {
+function ListedAssets() {
   const metamaskId = useSelector(state => state.global.wallet);
   const userAddress = metamaskId;
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [propertyDetails, setPropertyDetails] = useState([]);
-  const [listDetails,setListDetails]=useState([]);
 
   useEffect(() => {
     const fetchAllPropertiesData = async () => {
@@ -28,21 +27,30 @@ function MyAssets() {
   
     fetchAllPropertiesData();
   }, []);
+  // Inside the component function
+const [assetStates, setAssetStates] = useState({});
 
-  useEffect(() => {
-    const fetchAllRequestPropertiesData = async () => {
+useEffect(() => {
+  // Function to fetch asset states
+  const fetchAssetStates = async () => {
+    const states = {};
+    for (const asset of propertyDetails) {
       try {
-        const listDetails = await ReturnAllRequestedListingPropertiesList();
-        setListDetails(listDetails);
-        console.log("use effects list details:", listDetails);
+        const response = await isPropReq(asset.property_id, asset.owner);
+        states[asset.property_id] = response;
       } catch (error) {
-        console.error('Error fetching assets:', error);
+        console.error("Error fetching asset state:", error);
       }
-    };
-  
-    fetchAllRequestPropertiesData();
-  }, []);
-  
+    }
+    setAssetStates(states);
+  };
+
+  fetchAssetStates();
+}, [propertyDetails]);
+
+// Inside the JSX, replace the usage of isPropReq with assetStates[asset.property_id]
+
+
   // Function to handle search
   const handleSearch = () => {
     const searchTermLowerCase = searchTerm.toLowerCase();
@@ -52,21 +60,28 @@ function MyAssets() {
     setFilteredAssets(filtered);
   };
 
-  // Define filter options
-  const filterOptions = [
-    { label: 'Up for Verification', value: 'up_for_verification' },
-    { label: 'Verified', value: 'verified' },
-    ];
 
-  const handleRequestToList = async (property_id, name, location, images) => {
-     try {
-        const response1 = await requestPropertyListing(property_id, name, location, images);
-        console.log(response1);
-        
-      } catch (error) {
-        console.error("couldnt approve:", error);
-      }
-    };
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Call isPropReq for each asset to fetch updated information
+      const fetchAssetStates = async () => {
+        const states = {};
+        for (const asset of propertyDetails) {
+          try {
+            const response = await isPropReq(asset.property_id, asset.owner);
+            states[asset.property_id] = response;
+          } catch (error) {
+            console.error("Error fetching asset state:", error);
+          }
+        }
+        setAssetStates(states);
+      };
+    
+      fetchAssetStates();
+    }, 60000); // Poll every 60 seconds (adjust interval as needed)
+  
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, [propertyDetails]); // Trigger effect whenever propertyDetails changes
   
   const isPropReq = async (property_id, owner) => {
     try {  
@@ -78,32 +93,11 @@ function MyAssets() {
     }
   };
 
-  // Function to handle filter change
-  const handleFilterChange = (e) => {
-    // Update filter based on selected value
-    const selectedFilter = e.target.value;
-    console.log('Selected filter:', selectedFilter);
-
-    // Filter assets based on selected filter
-    switch (selectedFilter) {
-      case 'up_for_verification':
-        setFilteredAssets(propertyDetails.filter(asset => !asset.isPropertyVerified));
-        break;
-      case 'verified':
-        setFilteredAssets(propertyDetails.filter(asset => asset.isPropertyVerified));
-        break;
-      default:
-        // Reset filter to show all assets
-        setFilteredAssets(propertyDetails);
-        break;
-    }
-  };
-
   return (
     <div className="bg-gray-100 min-h-screen font-sans flex flex-grow p-8">
       <div className="container mx-auto">
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold mb-6 text-blue-500">My Assets</h2>
+          <h2 className="text-3xl font-bold mb-6 text-blue-500">My Listed Assets</h2>
           {/* Search bar */}
           <div className="mb-6 flex items-center">
             <input
@@ -120,16 +114,6 @@ function MyAssets() {
             >
               Search
             </button>
-            {/* Dropdown for filter */}
-            <select
-              onChange={handleFilterChange}
-              className="ml-4 px-4 py-2 text-lg font-normal leading-6 rounded border border-solid border-gray-300 focus:outline-none focus:border-primary focus:shadow-outline-primary"
-            >
-              <option value="">Filter</option>
-              {filterOptions.map((option, index) => (
-                <option key={index} value={option.value}>{option.label}</option>
-              ))}
-            </select>
           </div>
           {/* Grid for displaying assets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,4 +199,4 @@ function MyAssets() {
   );
 }
 
-export default MyAssets;
+export default ListedAssets;
