@@ -1,6 +1,256 @@
 {
 	"abi":[
 		{
+			"inputs": [],
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_property_id",
+					"type": "uint256"
+				}
+			],
+			"name": "AcceptListingRequest",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "InspectorMapping",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "id",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "inspector_address",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "name",
+					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "age",
+					"type": "uint256"
+				},
+				{
+					"internalType": "string",
+					"name": "designation",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "city",
+					"type": "string"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "LiquidTokenbalances",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "PropertyTokenbalances",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "ReturnAllPropertiesList",
+			"outputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "property_id",
+							"type": "uint256"
+						},
+						{
+							"internalType": "string",
+							"name": "name",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "propertyAddress",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "description",
+							"type": "string"
+						},
+						{
+							"internalType": "string",
+							"name": "location",
+							"type": "string"
+						},
+						{
+							"internalType": "uint256",
+							"name": "value",
+							"type": "uint256"
+						},
+						{
+							"internalType": "bool",
+							"name": "isPropertyVerified",
+							"type": "bool"
+						},
+						{
+							"internalType": "bool",
+							"name": "isListed",
+							"type": "bool"
+						},
+						{
+							"internalType": "string[]",
+							"name": "images",
+							"type": "string[]"
+						},
+						{
+							"internalType": "string[]",
+							"name": "ownership_proof",
+							"type": "string[]"
+						},
+						{
+							"internalType": "address",
+							"name": "owner",
+							"type": "address"
+						}
+					],
+					"internalType": "struct MyContractFinal.PropertyStruct[]",
+					"name": "",
+					"type": "tuple[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "ReturnAllPropertyIncpectorList",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "ReturnAllUserList",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "UserMapping",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "id",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "uname",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "email",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "phone_num",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "aadharNumber",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "pan_card",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "pronouns",
+					"type": "string"
+				},
+				{
+					"internalType": "bool",
+					"name": "isUserVerified",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
 			"inputs": [
 				{
 					"internalType": "uint256",
@@ -9,13 +259,13 @@
 				},
 				{
 					"internalType": "address",
-					"name": "userAddress",
+					"name": "_requestingUser",
 					"type": "address"
 				}
 			],
-			"name": "AcceptListingRequest",
+			"name": "acceptPropertyTransfer",
 			"outputs": [],
-			"stateMutability": "payable",
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
@@ -103,157 +353,6 @@
 		{
 			"inputs": [
 				{
-					"internalType": "address",
-					"name": "_addr",
-					"type": "address"
-				}
-			],
-			"name": "changeContractOwner",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "string",
-					"name": "_name",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_email",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_phone_num",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_aadharNumber",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_pan_card",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_pronouns",
-					"type": "string"
-				}
-			],
-			"name": "registerUser",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "_addr",
-					"type": "address"
-				}
-			],
-			"name": "removePropertyInspector",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_property_id",
-					"type": "uint256"
-				},
-				{
-					"internalType": "string",
-					"name": "_name",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "_loaction",
-					"type": "string"
-				},
-				{
-					"internalType": "string[]",
-					"name": "images",
-					"type": "string[]"
-				}
-			],
-			"name": "requestPropertyListing",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_property_id",
-					"type": "uint256"
-				},
-				{
-					"internalType": "address",
-					"name": "userAddress",
-					"type": "address"
-				},
-				{
-					"internalType": "uint256",
-					"name": "LiquidToken",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "propertyToken",
-					"type": "uint256"
-				}
-			],
-			"name": "requestPropertyPart",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"stateMutability": "nonpayable",
-			"type": "constructor"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_id",
-					"type": "uint256"
-				}
-			],
-			"name": "verfifyProperty",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "_userId",
-					"type": "address"
-				}
-			],
-			"name": "verifyUser",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
 					"internalType": "uint256",
 					"name": "",
 					"type": "uint256"
@@ -294,6 +393,11 @@
 				{
 					"internalType": "bool",
 					"name": "isPropertyVerified",
+					"type": "bool"
+				},
+				{
+					"internalType": "bool",
+					"name": "isListed",
 					"type": "bool"
 				},
 				{
@@ -373,6 +477,44 @@
 		{
 			"inputs": [
 				{
+					"internalType": "address",
+					"name": "userAddress",
+					"type": "address"
+				}
+			],
+			"name": "getMyReceivedPropertiesRequest",
+			"outputs": [
+				{
+					"internalType": "uint256[]",
+					"name": "",
+					"type": "uint256[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "userAddress",
+					"type": "address"
+				}
+			],
+			"name": "getMySentPropertiesRequest",
+			"outputs": [
+				{
+					"internalType": "uint256[]",
+					"name": "",
+					"type": "uint256[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
 					"internalType": "uint256",
 					"name": "property_id",
 					"type": "uint256"
@@ -418,6 +560,11 @@
 							"type": "bool"
 						},
 						{
+							"internalType": "bool",
+							"name": "isListed",
+							"type": "bool"
+						},
+						{
 							"internalType": "string[]",
 							"name": "images",
 							"type": "string[]"
@@ -442,38 +589,20 @@
 			"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "getTokenBalances",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
 			"inputs": [
 				{
-					"internalType": "address",
-					"name": "userAddress",
-					"type": "address"
+					"internalType": "uint256",
+					"name": "requestId",
+					"type": "uint256"
 				}
 			],
-			"name": "getUserProperties",
+			"name": "getPropertyListing",
 			"outputs": [
 				{
 					"components": [
 						{
 							"internalType": "uint256",
-							"name": "property_id",
+							"name": "reqId",
 							"type": "uint256"
 						},
 						{
@@ -483,28 +612,8 @@
 						},
 						{
 							"internalType": "string",
-							"name": "propertyAddress",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "description",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
 							"name": "location",
 							"type": "string"
-						},
-						{
-							"internalType": "uint256",
-							"name": "value",
-							"type": "uint256"
-						},
-						{
-							"internalType": "bool",
-							"name": "isPropertyVerified",
-							"type": "bool"
 						},
 						{
 							"internalType": "string[]",
@@ -512,63 +621,19 @@
 							"type": "string[]"
 						},
 						{
-							"internalType": "string[]",
-							"name": "ownership_proof",
-							"type": "string[]"
-						},
-						{
 							"internalType": "address",
 							"name": "owner",
 							"type": "address"
+						},
+						{
+							"internalType": "uint256",
+							"name": "property_id",
+							"type": "uint256"
 						}
 					],
-					"internalType": "struct MyContractFinal.PropertyStruct[]",
+					"internalType": "struct MyContractFinal.PropertyListingStruct",
 					"name": "",
-					"type": "tuple[]"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"name": "InspectorMapping",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "id",
-					"type": "uint256"
-				},
-				{
-					"internalType": "address",
-					"name": "inspector_address",
-					"type": "address"
-				},
-				{
-					"internalType": "string",
-					"name": "name",
-					"type": "string"
-				},
-				{
-					"internalType": "uint256",
-					"name": "age",
-					"type": "uint256"
-				},
-				{
-					"internalType": "string",
-					"name": "designation",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "city",
-					"type": "string"
+					"type": "tuple"
 				}
 			],
 			"stateMutability": "view",
@@ -640,16 +705,11 @@
 			"inputs": [
 				{
 					"internalType": "uint256",
-					"name": "_property_id",
+					"name": "_id",
 					"type": "uint256"
-				},
-				{
-					"internalType": "address",
-					"name": "userAddress",
-					"type": "address"
 				}
 			],
-			"name": "isPropertyRequested",
+			"name": "isPropertyVerified",
 			"outputs": [
 				{
 					"internalType": "bool",
@@ -664,11 +724,16 @@
 			"inputs": [
 				{
 					"internalType": "uint256",
-					"name": "_id",
+					"name": "",
 					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
 				}
 			],
-			"name": "isPropertyVerified",
+			"name": "isShareOwnerMapping",
 			"outputs": [
 				{
 					"internalType": "bool",
@@ -712,25 +777,6 @@
 					"internalType": "bool",
 					"name": "",
 					"type": "bool"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"name": "LiquidTokenbalances",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",
@@ -811,6 +857,11 @@
 				{
 					"internalType": "bool",
 					"name": "isPropertyVerified",
+					"type": "bool"
+				},
+				{
+					"internalType": "bool",
+					"name": "isListed",
 					"type": "bool"
 				},
 				{
@@ -909,6 +960,40 @@
 		{
 			"inputs": [
 				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "propertyOwnersShares",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "LiquidTokenPart",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "PropertyTokenPart",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				},
+				{
 					"internalType": "address",
 					"name": "",
 					"type": "address"
@@ -936,25 +1021,6 @@
 			"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"name": "PropertyTokenbalances",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
 			"inputs": [],
 			"name": "propertyValueToken",
 			"outputs": [
@@ -968,139 +1034,97 @@
 			"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "ReturnAllPropertiesList",
-			"outputs": [
+			"inputs": [
 				{
-					"components": [
-						{
-							"internalType": "uint256",
-							"name": "property_id",
-							"type": "uint256"
-						},
-						{
-							"internalType": "string",
-							"name": "name",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "propertyAddress",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "description",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "location",
-							"type": "string"
-						},
-						{
-							"internalType": "uint256",
-							"name": "value",
-							"type": "uint256"
-						},
-						{
-							"internalType": "bool",
-							"name": "isPropertyVerified",
-							"type": "bool"
-						},
-						{
-							"internalType": "string[]",
-							"name": "images",
-							"type": "string[]"
-						},
-						{
-							"internalType": "string[]",
-							"name": "ownership_proof",
-							"type": "string[]"
-						},
-						{
-							"internalType": "address",
-							"name": "owner",
-							"type": "address"
-						}
-					],
-					"internalType": "struct MyContractFinal.PropertyStruct[]",
-					"name": "",
-					"type": "tuple[]"
+					"internalType": "string",
+					"name": "_name",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_email",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_phone_num",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_aadharNumber",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_pan_card",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_pronouns",
+					"type": "string"
 				}
 			],
-			"stateMutability": "view",
+			"name": "registerUser",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "ReturnAllPropertyIncpectorList",
-			"outputs": [
+			"inputs": [
 				{
-					"internalType": "address[]",
-					"name": "",
-					"type": "address[]"
+					"internalType": "uint256",
+					"name": "_property_id",
+					"type": "uint256"
+				},
+				{
+					"internalType": "string",
+					"name": "_name",
+					"type": "string"
+				},
+				{
+					"internalType": "string",
+					"name": "_loaction",
+					"type": "string"
+				},
+				{
+					"internalType": "string[]",
+					"name": "images",
+					"type": "string[]"
 				}
 			],
-			"stateMutability": "view",
+			"name": "requestPropertyListing",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "ReturnAllRequestedListingPropertiesList",
-			"outputs": [
+			"inputs": [
 				{
-					"components": [
-						{
-							"internalType": "uint256",
-							"name": "reqId",
-							"type": "uint256"
-						},
-						{
-							"internalType": "string",
-							"name": "name",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "location",
-							"type": "string"
-						},
-						{
-							"internalType": "string[]",
-							"name": "images",
-							"type": "string[]"
-						},
-						{
-							"internalType": "address",
-							"name": "owner",
-							"type": "address"
-						},
-						{
-							"internalType": "uint256",
-							"name": "property_id",
-							"type": "uint256"
-						}
-					],
-					"internalType": "struct MyContractFinal.PropertyListingStruct[]",
-					"name": "",
-					"type": "tuple[]"
+					"internalType": "uint256",
+					"name": "_property_id",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "userAddress",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "LiquidToken",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "propertyToken",
+					"type": "uint256"
 				}
 			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "ReturnAllUserList",
-			"outputs": [
-				{
-					"internalType": "address[]",
-					"name": "",
-					"type": "address[]"
-				}
-			],
-			"stateMutability": "view",
+			"name": "requestPropertyPart",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
@@ -1119,55 +1143,27 @@
 		{
 			"inputs": [
 				{
+					"internalType": "uint256",
+					"name": "_id",
+					"type": "uint256"
+				}
+			],
+			"name": "verfifyProperty",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
 					"internalType": "address",
-					"name": "",
+					"name": "_userId",
 					"type": "address"
 				}
 			],
-			"name": "UserMapping",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "id",
-					"type": "address"
-				},
-				{
-					"internalType": "string",
-					"name": "uname",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "email",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "phone_num",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "aadharNumber",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "pan_card",
-					"type": "string"
-				},
-				{
-					"internalType": "string",
-					"name": "pronouns",
-					"type": "string"
-				},
-				{
-					"internalType": "bool",
-					"name": "isUserVerified",
-					"type": "bool"
-				}
-			],
-			"stateMutability": "view",
+			"name": "verifyUser",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		}
 	]

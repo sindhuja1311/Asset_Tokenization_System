@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
-import { ReturnAllRequestedListingPropertiesList,AcceptListingRequest } from '../../services/functions';
+import {getPropertyDetails, ReturnAllRequestedListingPropertiesList,AcceptListingRequest } from '../../services/functions';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel styles
 
 function List() {
@@ -34,8 +34,7 @@ function List() {
     try{
       console.log(property_id,userAddress);
       const response = await AcceptListingRequest(property_id,userAddress);
-      console.log(response);  
-      
+      window.alert(response);
   }
   catch(error){
       console.error("couldnt approve:", error);
@@ -69,23 +68,6 @@ function List() {
         {/* Main content */}
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-3xl font-bold mb-6 text-blue-500">List Assets</h2>
-          {/* Search bar 
-          <div className="mb-6 flex items-stretch">
-            <input
-              type="text"
-              className="flex-grow px-4 py-2 text-lg font-normal leading-6 rounded-l border border-solid border-gray-300 focus:outline-none focus:border-primary focus:shadow-outline-primary"
-              placeholder="Search by Unique ID"
-              aria-label="Search"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="flex-shrink-0 px-6 py-2 text-lg font-normal text-white bg-blue-500 rounded-r cursor-pointer hover:bg-blue-600 transition duration-300"
-            >
-              Search
-            </button>
-          </div>*/}
           {/* Grid for displaying assets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Render filtered assets */}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'react-responsive-carousel';
-import {requestPropertyListing, getPropertyShareofOwnersofProperty, getUserDetails, getUserPropertyDetails } from '../../services/functions';
+import {isAddressShareOwner,requestPropertyListing, getPropertyShareofOwnersofProperty, getUserDetails, getUserPropertyDetails, fetchAllPropeties } from '../../services/functions';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useSelector } from "react-redux";
 
-function MyAssets() {
+function CoOwned() {
   const metamaskId = useSelector(state => state.global.wallet);
   const userAddress = metamaskId;
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,35 +19,48 @@ function MyAssets() {
     setSelectedAsset(asset);
     setShowPopup(true);
   };
-  
+
   useEffect(() => {
     const fetchAllPropertiesData = async () => {
-      try {
-        const user = await getUserDetails(userAddress);
-        const propertyDetails = await getUserPropertyDetails(user.id);
-        setPropertyDetails(propertyDetails);
-        setFilteredAssets(propertyDetails); // Set all assets initially
-      } catch (error) {
-        console.error('Error fetching assets:', error);
-      }
+        try {
+            const user = await getUserDetails(userAddress);
+            const allProperties = await fetchAllPropeties();
+            const filteredProperties = [];
+
+            // Filter out properties where the current user is not the owner
+            for (const property of allProperties) {
+                const ownerDetails = await getUserDetails(property.owner);
+                if (ownerDetails.id.toLowerCase() !== userAddress.toLowerCase()) {
+                    // Check if the user is a share owner
+                    const isShareOwner = await isAddressShareOwner(property.property_id, userAddress);
+                    if (isShareOwner) {
+                        filteredProperties.push(property);
+                    }
+                }
+            }
+
+            setPropertyDetails(filteredProperties);
+            setFilteredAssets(filteredProperties); // Set all assets initially
+        } catch (error) {
+            console.error('Error fetching assets:', error);
+        }
     };
 
     fetchAllPropertiesData();
-  }, []);
+}, [userAddress]);
 
+  
+  
   useEffect(() => {
     const fetchPropertyShareOfOwners = async () => {
       try {
         const shareOfOwnersData = {};
         for (const asset of propertyDetails) {
           if (asset.isPropertyVerified) {
-            console.log(`Fetching share of owners for asset: ${asset.property_id}`);
             const shareOfOwners = await getPropertyShareofOwnersofProperty(asset.property_id);
-            console.log(shareOfOwners);
             shareOfOwnersData[asset.property_id] = shareOfOwners;
           }
         }
-        console.log(shareOfOwnersData);
         setShareOfOwnersData(shareOfOwnersData); // Update the state with the fetched data
       } catch (error) {
         console.error('Error fetching property share of owners:', error);
@@ -66,53 +79,12 @@ function MyAssets() {
     setFilteredAssets(filtered);
   };
 
-  // Define filter options
-  const filterOptions = [
-    { label: 'Up for Verification', value: 'up_for_verification' },
-    { label: 'Verified', value: 'verified' },
-    { label: 'Listed', value:'listed'}
-  ];
-
-  const handleRequestToList = async (property_id, name, location, images) => {
-     try {
-        const response1 = await requestPropertyListing(property_id, name, location, images);
-        console.log(response1);
-        
-      } catch (error) {
-        console.error("couldnt approve:", error);
-      }
-    };
-
-  // Function to handle filter change
-  const handleFilterChange = (e) => {
-    // Update filter based on selected value
-    const selectedFilter = e.target.value;
-    console.log('Selected filter:', selectedFilter);
-
-    // Filter assets based on selected filter
-    switch (selectedFilter) {
-      case 'up_for_verification':
-        setFilteredAssets(propertyDetails.filter(asset => !asset.isPropertyVerified));
-        break;
-      case 'verified':
-        setFilteredAssets(propertyDetails.filter(asset => asset.isPropertyVerified));
-        break;
-      case 'listed':
-        setFilteredAssets(propertyDetails.filter(asset => asset.isListed));
-          break;
-      default:
-        // Reset filter to show all assets
-        setFilteredAssets(propertyDetails);
-        break;
-    }
-  };
-
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans flex flex-grow p-8">
       <div className="container mx-auto">
         <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold mb-6 text-blue-500">My Assets</h2>
+          <h2 className="text-3xl font-bold mb-6 text-blue-500">Co-Owned Assets</h2>
           {/* Search bar */}
           <div className="mb-6 flex items-center">
             <input
@@ -129,16 +101,6 @@ function MyAssets() {
             >
               Search
             </button>
-            {/* Dropdown for filter */}
-            <select
-              onChange={handleFilterChange}
-              className="ml-4 px-4 py-2 text-lg font-normal leading-6 rounded border border-solid border-gray-300 focus:outline-none focus:border-primary focus:shadow-outline-primary"
-            >
-              <option value="">Filter</option>
-              {filterOptions.map((option, index) => (
-                <option key={index} value={option.value}>{option.label}</option>
-              ))}
-            </select>
           </div>
           {/* Grid for displaying assets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -210,22 +172,6 @@ function MyAssets() {
                   <p className="text-sm text-gray-700 mb-1">Verified: {asset.isPropertyVerified ? 'Yes' : 'No'}</p>
                   <p className="text-sm text-gray-700 mb-1">Listed: {asset.isListed ? 'Yes' : 'No'}</p>
                 </div>
-                {!asset.isPropertyVerified ? (
-                  <p className="mt-2 text-lg font-normal text-red-700 p-2 rounded-md">WAIT FOR VERIFICATION</p>
-                ) : (
-                  <>
-                    {asset.isListed ? (
-                      <strong className="text-lg text-green-600">PROPERTY IS LISTED</strong>
-                    ) : (
-                      <button
-                        onClick={() => handleRequestToList(asset.property_id, asset.name, asset.location, asset.images)}
-                        className="mt-2 px-4 py-2 text-lg font-normal text-white bg-green-500 rounded cursor-pointer hover:bg-green-600 transition duration-300"
-                      >
-                        Request to List
-                      </button>
-                    )}
-                  </>
-                )}
               </div>
             ))}
             {showPopup && selectedAsset && (
@@ -262,12 +208,17 @@ function MyAssets() {
                     <tbody>
                       {/* Populate table rows with owner data */}
                       {shareOfOwnersData[selectedAsset.property_id] && shareOfOwnersData[selectedAsset.property_id].map((owner, index) => (
-                        <tr key={index} style={{ backgroundColor: owner.user.toLowerCase() === userAddress.toLowerCase() ? 'yellow' : 'transparent' }}>
-                            <td className="border px-4 py-2">{owner.user}</td>
-                            <td className="border px-4 py-2">{owner.LiquidTokenPart}</td>
-                            <td className="border px-4 py-2">{owner.PropertyTokenPart}</td>
-                        </tr>
-                        ))}
+                    <tr key={index} style={{ 
+                        backgroundColor: selectedAsset.owner.toLowerCase() === owner.user.toLowerCase() ? 'lightgreen' : 
+                                        userAddress.toLowerCase() === owner.user.toLowerCase() ? 'lightyellow' : 
+                                        'transparent'
+                    }}>
+                    <td className="border px-4 py-2">{owner.user}</td>
+                    <td className="border px-4 py-2">{owner.LiquidTokenPart}</td>
+                    <td className="border px-4 py-2">{owner.PropertyTokenPart}</td>
+                </tr>
+))}
+
 
                     </tbody>
                   </table>
@@ -281,4 +232,4 @@ function MyAssets() {
   );
 }
 
-export default MyAssets;
+export default CoOwned;

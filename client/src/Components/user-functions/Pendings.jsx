@@ -1,101 +1,79 @@
-import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import { useLocation } from "react-router-dom";
-
-// Modal component
-function DetailsModal({ isOpen, onRequestClose, data }) {
-    if (!isOpen || !data) return null;
-
-    const { asset, owner, request_details, selling_details } = data;
-
-    return (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg shadow-md">
-                <h2 className="text-3xl font-bold mb-6 text-blue-500">Details</h2>
-                <div>
-                    <p><strong>Property Name:</strong> {asset && asset.name}</p>
-                    <p><strong>Unique ID:</strong> {asset && asset._id}</p>
-                    {/* Add other property details as needed */}
-                    <p><strong>Owner Name:</strong> {owner && owner.owner_name}</p>
-                    <p><strong>Owner Account ID:</strong> {owner && owner.account_id}</p>
-                    {/* Add other owner details as needed */}
-                    <p><strong>Buyer Name:</strong> {request_details && request_details.buyer_name}</p>
-                    <p><strong>Buyer Email:</strong> {request_details && request_details.email}</p>
-                    {/* Add other request details as needed */}
-                    <p><strong>Sell Percentage:</strong> {selling_details && selling_details.sell_percentage}</p>
-                    <p><strong>Token Available Count:</strong> {selling_details && selling_details.token_available_count}</p>
-                    {/* Add other selling details as needed */}
-                </div>
-                <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={onRequestClose}>Close</button>
-            </div>
-        </div>
-    );
-}
-
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { getMyReceivedPropertiesRequest, getPropertyDetails, acceptPropertyTransfer, isAddressShareOwner } from '../../services/functions'; // Import getPropertyDetails function
+import { useSelector } from 'react-redux';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel styles
 
 function Pendings() {
-    const [pendingRequests, setPendingRequests] = useState([]);
-    const [selectedRequest, setSelectedRequest] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const metamaskId = useSelector(state => state.global.wallet);
+    const userAddress = metamaskId;
+    const [requests, setRequests] = useState([]);
 
     useEffect(() => {
-        const fetchPendingRequests = async () => {
-            console.log("useffect");
+        const fetchRequests = async () => {
+            try {
+                const requests = await getMyReceivedPropertiesRequest(userAddress);
+                console.log(requests);
+                setRequests(requests);
+            } catch (error) {
+                console.error("Error fetching requests:", error);
+            }
         };
-        fetchPendingRequests();
-    }, []);
 
-    const handleViewDetails = (request) => {
-        setSelectedRequest(request);
-        setIsModalOpen(true);
-    };
+        fetchRequests();
+    }, [userAddress]);
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleTrade = (request) => {
-        // Implement logic to initiate trade
-        console.log("Initiate trade:", request);
+    const handleTransfer = async (property_id, requested_address) => {
+        try {
+            const response = await acceptPropertyTransfer(property_id, requested_address);
+            window.alert(response);
+        } catch (error) {
+            console.error("Error fetching requests:", error);
+        }
     };
 
     return (
         <div className="flex-grow p-8">
             <div className="container mx-auto">
                 <div className="max-w-full mx-auto bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-3xl font-bold mb-6 text-blue-500">Pending Requests</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-blue-500">Received Requests</h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full ">
+                        <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-100">
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metamask ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requesting Owner</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value Tokens</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Liquid Tokens</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transfer</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingRequests.map((request, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                        <td className="px-6 py-4">{request.asset && request.asset.unique_id}</td>
-                                        <td className="px-6 py-4">{request.owner && request.owner.account_id}</td>
-                                        <td className="px-6 py-4">{request.owner && request.owner.metamask_id}</td>
-                                        <td className="px-6 py-4">{request.request_details && request.request_details.value_type_count}</td>
-                                        <td className="px-6 py-4">{request.request_details && request.request_details.liquid_type_count}</td>
-                                        <td className="px-6 py-4">
-                                            <button className="text-blue-500 hover:underline" onClick={() => handleViewDetails(request)}>View Details</button>
-                                            <button className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => handleTrade(request)}>Trade</button>
-                                        </td>
+                                {requests.length > 0 ? (
+                                    requests.map((request, index) => (
+                                        <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                            <td className="px-6 py-4 whitespace-nowrap">{request.property_id}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">{request.requested_address}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">{request.LiquidTokenPart}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">{request.PropertyTokenPart}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleTransfer(request.property_id, request.requested_address)}>
+                                                    Transfer
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-4 text-center text-gray-500">No pending requests found</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <DetailsModal isOpen={isModalOpen} onRequestClose={handleCloseModal} data={selectedRequest} />
         </div>
     );
 }

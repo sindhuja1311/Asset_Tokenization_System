@@ -208,6 +208,7 @@ function Approve() {
                   <p className="text-gray-700 mb-2">Location: {asset.location}</p>
                   <p className="text-gray-700 mb-2">Value: {asset.value ? asset.value.toString() : ''}</p>
                   <p className="text-gray-700 mb-2">Verified: {asset.isPropertyVerified ? 'Yes' : 'No'}</p>
+                  <p className="text-gray-700 mb-2">Listed: {asset.isListed ? 'Yes' : 'No'}</p>
                   <p className="text-gray-700 text-sm mb-2">Owner: {asset.owner}</p>
                   
               {/* Render buttons based on verification status */}

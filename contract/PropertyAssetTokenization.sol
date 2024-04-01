@@ -5,14 +5,15 @@ pragma solidity ^0.8.20;
 // import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
+import "contracts/Liquidtoken.sol";
+import "contracts/Valuetoken.sol";
 
 contract MyContractFinal {
 
-address private propertyValueToken_address =
-        0xE8167A56d42f2B13b0D266f03aC993Ff8111DCCF;
+    address private propertyValueToken_address =
+        0x4BC85847ab8c763EB4F1A4fE07De1545694c5522;
     address private propertyLiquidToken_address =
-        0x7E6ACa803D0dF159aDC08389dDb119A0B9Fe24E4;
+       0xDd7CF60b8d4D4Df3067d52992985Cab7F2E7EdD6;
 
     address public contract_owner;
     IERC20 public propertyValueToken = IERC20(propertyValueToken_address);
@@ -55,6 +56,7 @@ address private propertyValueToken_address =
         string location;
         uint256 value;
         bool isPropertyVerified;
+        bool isListed;
         string[] images;
         string[] ownership_proof;
         address owner;
@@ -62,22 +64,18 @@ address private propertyValueToken_address =
     }
 
      struct PropertyListingStruct{
-     uint reqId;
-      string name;
-        string location;
-        string[] images;
-      address owner;
-        uint property_id;
-
+            uint reqId;
+            string name;
+            string location;
+            string[] images;
+            address owner;
+            uint property_id;
     }
 
     struct SharePart{
         uint LiquidTokenPart;
         uint PropertyTokenPart;
     }
-
-
-
     // MAPPING
     mapping(address => bool) RegisteredUserMapping;
     mapping(uint256 => address[]) allUsersList;
@@ -97,8 +95,9 @@ address private propertyValueToken_address =
     mapping(uint => bool) public propertyListMapping;
     mapping(address => uint256) public LiquidTokenbalances;
     mapping(address => uint256) public PropertyTokenbalances;
-
-    mapping(address => mapping(uint => SharePart)) public propertyShareRequstMapping;
+    mapping(address =>mapping(address => mapping(uint => SharePart))) public propertyShareRequstMapping;
+    mapping(uint => mapping(address => SharePart)) public propertyOwnersShares;
+    mapping(uint=>mapping(address => bool)) public isShareOwnerMapping;
 
     uint256 inspectorsCount;
     uint256 public userCount;
@@ -109,24 +108,15 @@ address private propertyValueToken_address =
 
     uint256 propertiesListingRequestCount;
 
-    function isContractOwner(address _addr) public view returns (bool) {
-        if (_addr == contract_owner) return true;
-        else return false;
-    }
-
-    function changeContractOwner(address _addr) public {
-        require(msg.sender == contract_owner, "you are not contractOwner");
-
-        contract_owner = _addr;
-    }
-
-    function isPropertyInspector(address _id) public view returns (bool) {
-        if (RegisteredInspectorMapping[_id]) {
-            return true;
-        } else {
-            return false;
+        function isContractOwner(address _addr) public view returns (bool) {
+            return _addr == contract_owner;
         }
-    }
+
+
+function isPropertyInspector(address _id) public view returns (bool) {
+    return RegisteredInspectorMapping[_id];
+}
+
 
     function getPropertyDetails(uint property_id) public view returns (PropertyStruct memory){
         require(isPropertyInspector(msg.sender));
@@ -134,14 +124,10 @@ address private propertyValueToken_address =
     }
 
     //-----------------------------------------------User-----------------------------------------------
+function isUserRegistered(address _addr) public view returns (bool) {
+    return RegisteredUserMapping[_addr];
+}
 
-    function isUserRegistered(address _addr) public view returns (bool) {
-        if (RegisteredUserMapping[_addr]) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     function registerUser(
         string memory _name,
@@ -206,27 +192,6 @@ address private propertyValueToken_address =
         );
         return true;
     }
-
-    function removePropertyInspector(address _addr) public {
-        require(msg.sender == contract_owner, "You are not contractOwner");
-        require(
-            RegisteredInspectorMapping[_addr],
-            "Property Inspector not found"
-        );
-        RegisteredInspectorMapping[_addr] = false;
-
-        uint256 len = allPropertyInspectorList[1].length;
-        for (uint256 i = 0; i < len; i++) {
-            if (allPropertyInspectorList[1][i] == _addr) {
-                allPropertyInspectorList[1][i] = allPropertyInspectorList[1][
-                    len - 1
-                ];
-                allPropertyInspectorList[1].pop();
-                break;
-            }
-        }
-    }
-
     function ReturnAllPropertyIncpectorList()
         public
         view
@@ -255,6 +220,7 @@ address private propertyValueToken_address =
         _loaction,
         _value,
         false,
+        false,
         _images,
         _ownership_proof,
         msg.sender
@@ -264,7 +230,6 @@ address private propertyValueToken_address =
     }
 
     function ReturnAllPropertiesList() public view returns (PropertyStruct[] memory) {
-            require(isPropertyInspector(msg.sender));
             PropertyStruct[] memory allProperties = new PropertyStruct[](propertiesCount); // Create an array to store all properties
             for (uint i = 1; i <= propertiesCount; i++) {
                 allProperties[i - 1] = allPropertiesList[i]; // Assign each property to the array
@@ -288,19 +253,6 @@ address private propertyValueToken_address =
         allPropertiesList[_id].isPropertyVerified=true;
     }
 
-
-    function getUserProperties(address userAddress) public view returns (PropertyStruct[] memory) {
-    uint[] memory propertyIds = MyProperties[userAddress];
-    PropertyStruct[] memory userProperties = new PropertyStruct[](propertyIds.length);
-
-    for (uint i = 0; i < propertyIds.length; i++) {
-        uint propertyId = propertyIds[i];
-        userProperties[i] = properties[propertyId];
-    }
-
-    return userProperties;
-}
-
     function requestPropertyListing(uint _property_id,  string memory _name,
         string memory _loaction,
         string[] memory images
@@ -311,55 +263,90 @@ address private propertyValueToken_address =
         allPropertiesListingRequestMapping[propertiesListingRequestCount]=propertiesListingMapping[msg.sender];
     }
 
-
-function isPropertyRequested(uint _property_id, address userAddress) public view returns(bool) {
-    // Check if there exists a property listing request for the given property id
-    return propertiesListingMapping[userAddress].property_id == _property_id;
-}
-
-    function ReturnAllRequestedListingPropertiesList() public view returns (PropertyListingStruct[] memory){
-        PropertyListingStruct[] memory allListProperties = new PropertyListingStruct[](propertiesListingRequestCount); // Create an array to store all properties
-        for (uint i = 1; i <= propertiesListingRequestCount; i++) {
-            allListProperties[i - 1] = allPropertiesListingRequestMapping[i]; // Assign each property to the array
+    
+        function getPropertyListing(uint requestId) public view returns (PropertyListingStruct memory) {
+            return allPropertiesListingRequestMapping[requestId];
         }
-        return allListProperties;
-        // will return all properties
-    }
 
 
-    function AcceptListingRequest(uint _property_id , address userAddress) external payable {
-        require(isUserVerified(userAddress) && isPropertyVerified(_property_id) && isPropertyOwner(_property_id, userAddress) && isPropertyInspector(msg.sender), "Invalid request");
-        propertyValueToken.transferFrom(msg.sender, properties[_property_id].owner, propertyOwnerTokenAmount);
-        propertyLiquidToken.transferFrom(msg.sender, properties[_property_id].owner, propertyOwnerTokenAmount);
-        LiquidTokenbalances[msg.sender]=propertyOwnerTokenAmount;
-        PropertyTokenbalances[msg.sender]=propertyOwnerTokenAmount;
-    }
 
-    function getTokenBalances() public view returns(uint256, uint256){
-        return (LiquidTokenbalances[msg.sender], PropertyTokenbalances[msg.sender]);
+    function AcceptListingRequest(uint _property_id) public {
+        require(isPropertyInspector(msg.sender), "Invalid request");
+
+        address propertyOwner = properties[_property_id].owner;
+        require(propertyLiquidToken.transfer(propertyOwner, propertyOwnerTokenAmount));
+        require(propertyValueToken.transfer(propertyOwner, propertyOwnerTokenAmount));
+
+        LiquidTokenbalances[propertyOwner] += propertyOwnerTokenAmount;
+        PropertyTokenbalances[propertyOwner] += propertyOwnerTokenAmount;
+        propertyOwnersShares[_property_id][propertyOwner] = SharePart(propertyOwnerTokenAmount, propertyOwnerTokenAmount);
+        properties[_property_id].isListed = true;
+        allPropertiesList[_property_id].isListed=true;
     }
 
     // request property part 
 
     function requestPropertyPart(uint _property_id,address userAddress, uint LiquidToken, uint propertyToken) public {
 
-        require(isUserVerified(userAddress) && isPropertyVerified(_property_id) && isPropertyOwner(_property_id, userAddress) , "Invalid request");
-        propertyShareRequstMapping[userAddress][_property_id] = SharePart(LiquidToken, propertyToken);
+        require(isUserVerified(userAddress) && isPropertyVerified(_property_id) && (isPropertyOwner(_property_id, userAddress) || isShareOwnerMapping[_property_id][userAddress]) , "Invalid request");
+        propertyShareRequstMapping[msg.sender][userAddress][_property_id] = SharePart(LiquidToken, propertyToken);
         MySentPropertiesRequest[msg.sender].push(_property_id);
-        MyReceivedPropertiesRequest[properties[_property_id].owner].push(_property_id);
-
+        MyReceivedPropertiesRequest[userAddress].push(_property_id);
     }
 
+    function getMySentPropertiesRequest(address userAddress) public view returns (uint[] memory) {
+        return MySentPropertiesRequest[userAddress];
+    }
+
+    // Get MyReceivedPropertiesRequest
+    function getMyReceivedPropertiesRequest(address userAddress) public view returns (uint[] memory) {
+        return MyReceivedPropertiesRequest[userAddress];
+    }
+
+function acceptPropertyTransfer(uint _property_id, address _requestingUser) public {
+    SharePart memory requestedShare = propertyShareRequstMapping[_requestingUser][msg.sender][_property_id];
+    require(requestedShare.LiquidTokenPart > 0 && requestedShare.PropertyTokenPart > 0 && properties[_property_id].isListed, "Invalid requested share");
+    require(LiquidTokenbalances[msg.sender] >= requestedShare.LiquidTokenPart && PropertyTokenbalances[msg.sender] >= requestedShare.PropertyTokenPart, "Insufficient tokens");
+
+    require(propertyLiquidToken.transfer(_requestingUser, requestedShare.LiquidTokenPart) && propertyValueToken.transfer(_requestingUser, requestedShare.PropertyTokenPart), "Failed to transfer tokens");
+
+    // Update balances for the current owner
+    LiquidTokenbalances[msg.sender] -= requestedShare.LiquidTokenPart;
+    PropertyTokenbalances[msg.sender] -= requestedShare.PropertyTokenPart;
+    
+    // Update balances for the requesting user
+    LiquidTokenbalances[_requestingUser] += requestedShare.LiquidTokenPart;
+    PropertyTokenbalances[_requestingUser] += requestedShare.PropertyTokenPart;
+
+    // Update the token shares mapping for the new owner
+    SharePart storage newOwnerShares = propertyOwnersShares[_property_id][_requestingUser];
+    newOwnerShares.LiquidTokenPart += requestedShare.LiquidTokenPart;
+    newOwnerShares.PropertyTokenPart += requestedShare.PropertyTokenPart;
+
+    // Update the token shares mapping for the old owner
+    SharePart storage oldOwnerShares = propertyOwnersShares[_property_id][msg.sender];
+    oldOwnerShares.LiquidTokenPart -= requestedShare.LiquidTokenPart;
+    oldOwnerShares.PropertyTokenPart -= requestedShare.PropertyTokenPart;
+    isShareOwnerMapping[_property_id][_requestingUser]=true;
+    delete propertyShareRequstMapping[_requestingUser][msg.sender][_property_id];
+   // Remove property from MySentPropertiesRequest and MyReceivedPropertiesRequest
+    removePropertyFromMapping(MySentPropertiesRequest[_requestingUser], _property_id);
+    removePropertyFromMapping(MyReceivedPropertiesRequest[msg.sender], _property_id);
+}
+
+function removePropertyFromMapping(uint[] storage propertyList, uint _property_id) private {
+    for (uint i = 0; i < propertyList.length; i++) {
+        if (propertyList[i] == _property_id) {
+            for (uint j = i; j < propertyList.length - 1; j++) {
+                propertyList[j] = propertyList[j + 1];
+            }
+            propertyList.pop();
+            break; // Remove this line if you want to remove all occurrences of _property_id
+        }
+    }
+}
 
 
 
-
-
-
-
-
-
-
-
-    // ------------------------------------------------ ADD PROPERTY LISTING -----------------------------------------------------------
+// ------------------------------------------------ ADD PROPERTY LISTING -----------------------------------------------------------
 }
