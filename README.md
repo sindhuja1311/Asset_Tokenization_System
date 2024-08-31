@@ -59,7 +59,7 @@ Exploring UNISWAP to manage token generation
    - Ether.js library
    - Metamask wallet or any wallet of choice
 2. **User Interface:**
-   - Reactjs + Vite, Express.js, Node.js, Redux, TailWind CSS
+   - Reactjs + Vite, Redux, TailWind CSS
 
 # Functionality
 
